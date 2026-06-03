@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
 import { CONTACT_MAILTO } from "@/lib/branding";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
@@ -21,7 +21,25 @@ import { cn } from "@/lib/utils";
 const MAX_LENGTH = 10_000;
 const DRAFT_STORAGE_KEY = "creed:feedback-draft";
 
+// Local copy of the canonical viewport hook (see review-pill.tsx). The trimmed
+// placeholder / single-link footer and narrower panel are mobile-only.
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return isMobile;
+}
+
 export function FeedbackMenuItem() {
+  const isMobile = useIsMobile();
+  // Controlled so a second tap on the trigger closes the panel on touch
+  // devices (Radix submenus don't toggle-close on re-tap by default).
+  const [subOpen, setSubOpen] = useState(false);
   // Hydrate the draft from localStorage so closing the menu (or even
   // navigating between routes) keeps whatever the user already typed.
   // Only a hard refresh / explicit submit / manual delete clears it.
@@ -99,10 +117,18 @@ export function FeedbackMenuItem() {
   }, [status]);
 
   return (
-    <DropdownMenuSub>
+    <DropdownMenuSub open={subOpen} onOpenChange={setSubOpen}>
       <DropdownMenuSubTrigger
         onMouseEnter={() => iconRef.current?.startAnimation()}
         onMouseLeave={() => iconRef.current?.stopAnimation()}
+        onPointerDown={(event) => {
+          // Touch: toggle so a second tap closes it. Mouse keeps Radix's
+          // hover-driven open/close.
+          if (event.pointerType !== "mouse") {
+            event.preventDefault();
+            setSubOpen((open) => !open);
+          }
+        }}
         className={cn(
           // Match the AnimatedMenuIconItem rows: same padding, radius, gap, font.
           "group/feedback gap-1.5 rounded-[var(--radius-md)] px-2.5 py-2 text-[13px] focus:bg-[var(--creed-surface-raised)] data-[state=open]:bg-[var(--creed-surface-raised)]",
@@ -131,7 +157,7 @@ export function FeedbackMenuItem() {
           sideOffset={14}
           alignOffset={0}
           className={cn(
-            "relative w-[320px] border-[var(--creed-border)] bg-[var(--creed-surface)] p-0",
+            "relative w-[min(240px,calc(100vw-2.5rem))] border-[var(--creed-border)] bg-[var(--creed-surface)] p-0 md:w-[320px]",
             // Bridging pseudo spans the sideOffset gap so the cursor can
             // travel from the row into the panel without dismissing it.
             "before:pointer-events-auto before:absolute before:-left-4 before:top-0 before:bottom-0 before:w-4 before:content-['']"
@@ -145,7 +171,11 @@ export function FeedbackMenuItem() {
                 setContent(event.target.value.slice(0, MAX_LENGTH))
               }
               onKeyDown={handleKeyDown}
-              placeholder="Have an idea or found a bug? Tell us…"
+              placeholder={
+                isMobile
+                  ? "Have an idea or found a bug?"
+                  : "Have an idea or found a bug? Tell us…"
+              }
               rows={4}
               disabled={submitting || status === "sent"}
               className="min-h-[96px] resize-none rounded-[9px] border-[var(--creed-border)] bg-transparent px-3 py-2.5 text-[13px] leading-5 placeholder:text-[var(--creed-text-tertiary)]"
@@ -190,14 +220,19 @@ export function FeedbackMenuItem() {
                       className="font-medium text-[#2563EB] transition-colors hover:text-[#1D4ED8]"
                     >
                       Contact us
-                    </a>{" "}
-                    or{" "}
-                    <Link
-                      href="/docs"
-                      className="font-medium text-[#2563EB] transition-colors hover:text-[#1D4ED8]"
-                    >
-                      see docs
-                    </Link>
+                    </a>
+                    {isMobile ? null : (
+                      <>
+                        {" "}
+                        or{" "}
+                        <Link
+                          href="/docs"
+                          className="font-medium text-[#2563EB] transition-colors hover:text-[#1D4ED8]"
+                        >
+                          see docs
+                        </Link>
+                      </>
+                    )}
                     .
                   </motion.span>
                 )}

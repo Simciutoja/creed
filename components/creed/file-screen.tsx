@@ -83,6 +83,7 @@ import {
   InlineNewSectionProposal,
   InlineProposalDiff,
   computeDiffParts,
+  htmlToText,
   summarizeDiff,
 } from "@/components/creed/inline-proposal-diff";
 import { ReviewPill } from "@/components/creed/review-pill";
@@ -290,6 +291,296 @@ function resolveSectionAccent(
   return summarySection.accent;
 }
 
+type SectionChangeKind = "added" | "removed" | "modified";
+
+type SectionLike = { id: string; name: string; accent: AccentKey; content: string };
+
+type SectionChange = {
+  id: string;
+  name: string;
+  accent: AccentKey;
+  kind: SectionChangeKind;
+  // "before" / "after" relative to the direction (push or pull) being shown.
+  existingContent: string;
+  nextContent: string;
+};
+
+function matchSection(section: SectionLike, pool: SectionLike[]) {
+  const byId = pool.find((candidate) => candidate.id === section.id);
+  if (byId) {
+    return byId;
+  }
+  const normalized = section.name.trim().toLowerCase();
+  return pool.find((candidate) => candidate.name.trim().toLowerCase() === normalized);
+}
+
+// Diff two section sets into add / remove / modify rows. `before` is the
+// current state of the destination and `after` is what it becomes, so for a
+// push before=remote/after=local and for a pull before=local/after=remote.
+// Accents always resolve against the local sections so colours match the app.
+function computeSectionChanges(
+  before: SectionLike[],
+  after: SectionLike[],
+  localSections: CreedSection[]
+): SectionChange[] {
+  const changes: SectionChange[] = [];
+  const consumedBeforeIds = new Set<string>();
+
+  for (const next of after) {
+    const prev = matchSection(next, before);
+    const accent = resolveSectionAccent(next, localSections);
+    if (!prev) {
+      changes.push({
+        id: next.id,
+        name: next.name,
+        accent,
+        kind: "added",
+        existingContent: "",
+        nextContent: next.content,
+      });
+    } else {
+      consumedBeforeIds.add(prev.id);
+      changes.push({
+        id: next.id,
+        name: next.name,
+        accent,
+        kind: "modified",
+        existingContent: prev.content,
+        nextContent: next.content,
+      });
+    }
+  }
+
+  for (const prev of before) {
+    if (consumedBeforeIds.has(prev.id)) {
+      continue;
+    }
+    changes.push({
+      id: prev.id,
+      name: prev.name,
+      accent: resolveSectionAccent(prev, localSections),
+      kind: "removed",
+      existingContent: prev.content,
+      nextContent: "",
+    });
+  }
+
+  return changes;
+}
+
+// Smooth height + fade reveal, shared by every change row. Eases out (expo) so
+// the dropdown glides open rather than snapping.
+function SmoothExpand({ open, children }: { open: boolean; children: ReactNode }) {
+  return (
+    <AnimatePresence initial={false}>
+      {open ? (
+        <motion.div
+          key="content"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{
+            height: { duration: 0.42, ease: [0.16, 1, 0.3, 1] },
+            opacity: { duration: 0.3, ease: "easeOut" },
+          }}
+          className="overflow-hidden"
+        >
+          {children}
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
+const CHEVRON_CLASS =
+  "h-3.5 w-3.5 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]";
+
+// One row in a push / pull preview. Modified sections render the accent-tinted
+// diff dropdown; added / removed sections render the clean green / red
+// dashed-border dropdown (same language as the inline proposal cards) that
+// expands to show the content being added or deleted - no diff.
+function SectionChangeRow({ change }: { change: SectionChange }) {
+  const [expanded, setExpanded] = useState(false);
+  const { kind, name, accent } = change;
+
+  const parts = useMemo(
+    () =>
+      kind === "modified"
+        ? computeDiffParts(change.existingContent, change.nextContent)
+        : [],
+    [kind, change.existingContent, change.nextContent]
+  );
+  const stats = useMemo(() => summarizeDiff(parts), [parts]);
+
+  if (kind === "added" || kind === "removed") {
+    const added = kind === "added";
+    const content = added ? change.nextContent : change.existingContent;
+    const containerClass = added
+      ? "border-[#10b981]/35 bg-[#ECFDF5]/40 dark:border-[#22c55e]/35 dark:bg-[#052e1a]/40"
+      : "border-[#dc2626]/35 bg-[#FEF2F2]/40 dark:border-[#ef4444]/35 dark:bg-[#7f1d1d]/15";
+    const toneClass = added
+      ? "text-[#10b981] dark:text-[#4ade80]"
+      : "text-[#dc2626] dark:text-[#f87171]";
+    const dividerClass = added ? "border-[#10b981]/20" : "border-[#dc2626]/20";
+
+    return (
+      <div className={cn("overflow-hidden rounded-xl border border-dashed", containerClass)}>
+        <button
+          type="button"
+          onClick={() => setExpanded((value) => !value)}
+          className="flex w-full items-center justify-between gap-3 px-3.5 py-2 text-left"
+          aria-expanded={expanded}
+        >
+          <span className="truncate text-[14px] font-medium text-[var(--creed-text-primary)]">
+            {name}
+          </span>
+          <span className="flex shrink-0 items-center gap-2.5">
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 rounded-[7px] bg-[var(--creed-surface)] px-2 py-1 text-[11px] font-medium",
+                toneClass
+              )}
+            >
+              <span className="font-mono leading-none">{added ? "+" : "−"}</span>
+              {added ? "Added" : "Removed"}
+            </span>
+            <ChevronDown
+              className={cn(CHEVRON_CLASS, toneClass, expanded ? "rotate-0" : "-rotate-90")}
+            />
+          </span>
+        </button>
+        <SmoothExpand open={expanded}>
+          <div className={cn("border-t", dividerClass)} />
+          <div className="creed-diff-block px-4 py-3 text-[14px] leading-7 text-[var(--creed-text-primary)]">
+            {htmlToText(content) || "(empty)"}
+          </div>
+        </SmoothExpand>
+      </div>
+    );
+  }
+
+  const unchanged = stats.added === 0 && stats.removed === 0;
+
+  return (
+    // Modified: one accent-tinted block where the header and the expanded
+    // dropdown share the same section tint as a continuation.
+    <div className="overflow-hidden rounded-xl" style={{ backgroundColor: accentTintMap[accent] }}>
+      <button
+        type="button"
+        onClick={() => setExpanded((value) => !value)}
+        className="flex w-full items-center justify-between gap-3 px-3.5 py-2 text-left"
+        aria-expanded={expanded}
+      >
+        <span className="truncate text-[14px] font-medium" style={{ color: accentColorMap[accent] }}>
+          {name}
+        </span>
+        <span className="flex shrink-0 items-center gap-2.5">
+          {/* The +/- numbers sit in their own surface-coloured mini card so
+              they stay legible on top of the section's accent tint. */}
+          <span className="inline-flex items-center gap-1.5 rounded-[7px] bg-[var(--creed-surface)] px-2 py-1">
+            <DiffBadge tone="added" count={stats.added} />
+            <DiffBadge tone="removed" count={stats.removed} />
+          </span>
+          <ChevronDown
+            className={cn(CHEVRON_CLASS, expanded ? "rotate-0" : "-rotate-90")}
+            style={{ color: accentColorMap[accent] }}
+          />
+        </span>
+      </button>
+      <SmoothExpand open={expanded}>
+        {/* Inside the tinted dropdown, an inset card on the normal surface
+            colour (no border) so the diff stays legible regardless of the
+            section's accent tint. */}
+        <div className="px-2 pb-2">
+          <div className="creed-diff-block rounded-[10px] bg-[var(--creed-surface)] px-3.5 py-3">
+            {unchanged ? (
+              <span className="text-[var(--creed-text-tertiary)]">No textual change</span>
+            ) : (
+              parts.map((part, index) => {
+                if (part.added) {
+                  return (
+                    <span key={index} className="creed-diff-add">
+                      {part.value}
+                    </span>
+                  );
+                }
+                if (part.removed) {
+                  return (
+                    <span key={index} className="creed-diff-remove">
+                      {part.value}
+                    </span>
+                  );
+                }
+                return <span key={index}>{part.value}</span>;
+              })
+            )}
+          </div>
+        </div>
+      </SmoothExpand>
+    </div>
+  );
+}
+
+// The animated, scrollable list of section changes shared by both the push and
+// pull dialogs.
+function SectionChangeList({
+  changes,
+  heading,
+  show,
+  renderKey,
+}: {
+  changes: SectionChange[];
+  heading: string;
+  show: boolean;
+  renderKey: number;
+}) {
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      {show ? (
+        <motion.div
+          key={renderKey}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          className="rounded-[var(--radius-lg)] border border-[var(--creed-border)] bg-[var(--creed-surface)]"
+        >
+          <div className="border-b border-[var(--creed-border)] px-4 py-3 text-[13px] font-medium text-[var(--creed-text-secondary)]">
+            {heading}
+          </div>
+          <div className="max-h-[280px] overflow-y-auto px-4 py-3">
+            <motion.div
+              className="space-y-2"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.08, delayChildren: 0.16 } },
+              }}
+            >
+              {changes.map((change) => (
+                <motion.div
+                  key={`${change.kind}-${change.id}`}
+                  variants={{
+                    hidden: { opacity: 0, y: 10 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
+                    },
+                  }}
+                >
+                  <SectionChangeRow change={change} />
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
 type GitHubVersionStatus = {
   connected: boolean;
   configured: boolean;
@@ -319,7 +610,6 @@ type GitHubPullPreview = {
   remoteCommittedAt?: string | null;
   remoteContentHash?: string | null;
   warnings: string[];
-  summary: Array<{ id: string; name: string; kind: string; accent: AccentKey }>;
   sections: CreedSection[];
 };
 
@@ -423,6 +713,13 @@ export function FileScreen() {
   const [pullPreview, setPullPreview] = useState<GitHubPullPreview | null>(null);
   const [pullPreviewRenderKey, setPullPreviewRenderKey] = useState(0);
   const [showPullPreview, setShowPullPreview] = useState(false);
+  const [pushPreview, setPushPreview] = useState<{
+    sections: CreedSection[];
+    warnings: string[];
+  } | null>(null);
+  const [pushPreviewRenderKey, setPushPreviewRenderKey] = useState(0);
+  const [showPushPreview, setShowPushPreview] = useState(false);
+  const [pushPreviewBusy, setPushPreviewBusy] = useState(false);
   const [selectedVersionAction, setSelectedVersionAction] = useState<"push" | "pull">("push");
   const [renameSectionState, setRenameSectionState] = useState<{
     id: string;
@@ -903,6 +1200,53 @@ export function FileScreen() {
     }
   }
 
+  async function handleOpenPushReview() {
+    setSelectedVersionAction("push");
+    setPushMessage("Update Creed");
+    setPushPreview(null);
+    setPushDialogOpen(true);
+
+    if (!githubConfigured) {
+      return;
+    }
+
+    try {
+      setPushPreviewBusy(true);
+      const buffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(localMarkdown));
+      const localHash = Array.from(new Uint8Array(buffer))
+        .map((value) => value.toString(16).padStart(2, "0"))
+        .join("");
+
+      const response = await fetch("/api/app/github/pull/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ localHash }),
+      });
+
+      // No creed.md in the repo yet: nothing remote to diff against, so every
+      // local section reads as an addition.
+      if (response.status === 404) {
+        setPushPreview({ sections: [], warnings: [] });
+        setPushPreviewRenderKey((current) => current + 1);
+        return;
+      }
+
+      const payload = (await response.json()) as GitHubPullPreview & { error?: string };
+      if (!response.ok) {
+        throw new Error(payload?.error || "Could not preview the push.");
+      }
+
+      setPushPreview({ sections: payload.sections, warnings: payload.warnings ?? [] });
+      setPushPreviewRenderKey((current) => current + 1);
+    } catch (error) {
+      // Leave the dialog open so the user can still push; just surface why the
+      // preview is missing.
+      toast.error(error instanceof Error ? error.message : "Could not preview the push.");
+    } finally {
+      setPushPreviewBusy(false);
+    }
+  }
+
   async function handlePushCreed() {
     try {
       setSelectedVersionAction("push");
@@ -1179,6 +1523,28 @@ export function FileScreen() {
   }, [pullDialogOpen, pullPreview, pullPreviewRenderKey]);
 
   useEffect(() => {
+    if (!pushDialogOpen || !pushPreview) {
+      setShowPushPreview(false);
+      return;
+    }
+
+    setShowPushPreview(false);
+    let secondFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        setShowPushPreview(true);
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(firstFrame);
+      if (secondFrame) {
+        cancelAnimationFrame(secondFrame);
+      }
+    };
+  }, [pushDialogOpen, pushPreview, pushPreviewRenderKey]);
+
+  useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
@@ -1374,8 +1740,7 @@ export function FileScreen() {
                           }
 
                           if (!pushDisabled) {
-                            setPushMessage("Update Creed");
-                            setPushDialogOpen(true);
+                            void handleOpenPushReview();
                           }
                         }}
                         disabled={selectedVersionAction === "pull" ? pullDisabled : pushDisabled}
@@ -1410,9 +1775,7 @@ export function FileScreen() {
                             disabled={pushDisabled}
                             onSelect={(event) => {
                               event.preventDefault();
-                              setSelectedVersionAction("push");
-                              setPushMessage("Update Creed");
-                              setPushDialogOpen(true);
+                              void handleOpenPushReview();
                             }}
                           >
                             Push
@@ -1550,12 +1913,13 @@ export function FileScreen() {
                         </AnimatedMenuIconItem>
                         <DropdownMenuSeparator />
                         <AnimatedMenuIconItem
-                          variant="destructive"
                           icon={DeleteIcon}
-                          className="text-[13px]"
-                          onSelect={(event) => {
-                            event.preventDefault();
-                            setDeleteFileOpen(true);
+                          className="bg-[#DC2626] text-[13px] text-white hover:bg-[#B91C1C] hover:text-white focus:bg-[#B91C1C] focus:text-white data-[highlighted]:bg-[#B91C1C] data-[highlighted]:text-white"
+                          onSelect={() => {
+                            // Let the menu close first, then open the dialog on
+                            // the next tick so its enter animation plays (two
+                            // Radix overlays in the same tick skips it).
+                            window.setTimeout(() => setDeleteFileOpen(true), 0);
                           }}
                         >
                           Delete
@@ -1660,10 +2024,16 @@ export function FileScreen() {
                       onDuplicate={() => duplicateSection(section.id)}
                       onSetAccent={(accent) => setSectionAccent(section.id, accent)}
                       onDelete={() =>
-                        setDeleteSectionState({
-                          id: section.id,
-                          name: section.name,
-                        })
+                        // Defer so the section menu closes before the dialog
+                        // opens, letting the dialog play its enter animation.
+                        window.setTimeout(
+                          () =>
+                            setDeleteSectionState({
+                              id: section.id,
+                              name: section.name,
+                            }),
+                          0
+                        )
                       }
                       onAddSectionAfter={() => openComposerAndReveal(section.id)}
                     />
@@ -1808,19 +2178,29 @@ export function FileScreen() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="rounded-[var(--radius-lg)] border border-[var(--creed-border)] bg-[var(--creed-background)] px-4 py-4 text-[14px] leading-7 text-[var(--creed-text-secondary)]">
-              Repo:{" "}
-              <span className="font-medium text-[var(--creed-text-primary)]">
-                {state.settings.versionControl.repoOwner && state.settings.versionControl.repoName
-                  ? `${state.settings.versionControl.repoOwner}/${state.settings.versionControl.repoName}`
-                  : "Not configured"}
-              </span>
-              {" · "}
-              Branch:{" "}
-              <span className="font-medium text-[var(--creed-text-primary)]">
-                {state.settings.versionControl.branch || "Not configured"}
-              </span>
-            </div>
+            {pushPreview?.warnings.length ? (
+              <div className="rounded-[var(--radius-lg)] border border-[#FDE68A] bg-[#FFFBEB] px-4 py-4 text-[14px] leading-7 text-[#92400E] dark:border-[#fbbf24]/40 dark:bg-[#451a03]/40 dark:text-[#fbbf24]">
+                {pushPreview.warnings.join(" ")}
+              </div>
+            ) : null}
+
+            {pushPreviewBusy && !pushPreview ? (
+              <div className="py-2 text-[14px] text-[var(--creed-text-secondary)]">
+                Checking what will change...
+              </div>
+            ) : pushPreview ? (
+              <SectionChangeList
+                changes={computeSectionChanges(
+                  pushPreview.sections,
+                  state.sections,
+                  state.sections
+                )}
+                heading="Outgoing changes"
+                show={showPushPreview}
+                renderKey={pushPreviewRenderKey}
+              />
+            ) : null}
+
             <div>
               <label className="mb-2 block text-[12px] font-medium text-[var(--creed-text-secondary)]">
                 Commit message
@@ -1867,76 +2247,16 @@ export function FileScreen() {
                 </div>
               ) : null}
 
-              <AnimatePresence mode="wait" initial={false}>
-                {showPullPreview ? (
-                  <motion.div
-                    key={pullPreviewRenderKey}
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                    className="rounded-[var(--radius-lg)] border border-[var(--creed-border)] bg-[var(--creed-surface)]"
-                  >
-                    <div className="border-b border-[var(--creed-border)] px-4 py-3 text-[13px] font-medium text-[var(--creed-text-secondary)]">
-                      Sections that will be created or updated
-                    </div>
-                    <div className="max-h-[280px] overflow-y-auto px-4 py-3">
-                      <motion.div
-                        className="space-y-2"
-                        initial="hidden"
-                        animate="visible"
-                        variants={{
-                          hidden: {},
-                          visible: {
-                            transition: {
-                              staggerChildren: 0.08,
-                              delayChildren: 0.16,
-                            },
-                          },
-                        }}
-                      >
-                        {pullPreview.summary.map((section) => {
-                          const accent = resolveSectionAccent(section, state.sections);
-
-                          return (
-                            <motion.div
-                              key={section.id}
-                              className="flex items-center justify-between rounded-xl px-3.5 py-2"
-                              variants={{
-                                hidden: { opacity: 0, y: 10 },
-                                visible: {
-                                  opacity: 1,
-                                  y: 0,
-                                  transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
-                                },
-                              }}
-                              style={{
-                                // No border - read as a tinted tag pill, not a
-                                // bordered card. Same accent-tinted background
-                                // the rest of the section UI uses.
-                                backgroundColor: accentTintMap[accent],
-                              }}
-                            >
-                              <div
-                                className="text-[14px] font-medium"
-                                style={{ color: accentColorMap[accent] }}
-                              >
-                                {section.name}
-                              </div>
-                              <div
-                                className="text-[12px]"
-                                style={{ color: accentColorMap[accent] }}
-                              >
-                                {section.kind}
-                              </div>
-                            </motion.div>
-                          );
-                        })}
-                      </motion.div>
-                    </div>
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
+              <SectionChangeList
+                changes={computeSectionChanges(
+                  state.sections,
+                  pullPreview.sections,
+                  state.sections
+                )}
+                heading="Incoming changes"
+                show={showPullPreview}
+                renderKey={pullPreviewRenderKey}
+              />
             </div>
           ) : null}
           <DialogFooter className="justify-between border-t-[var(--creed-border)] bg-[var(--creed-surface)] sm:justify-between">
@@ -2263,7 +2583,7 @@ function SectionCard({
                             }
                           >
                             <span
-                              className="h-3 w-3 rounded-full"
+                              className="h-3 w-3 rounded-[4px]"
                               style={{ backgroundColor: accentColorMap[accentKey] }}
                             />
                           </button>
@@ -2281,21 +2601,10 @@ function SectionCard({
                 Duplicate
               </AnimatedMenuIconItem>
               <DropdownMenuSeparator />
-              {/*
-                Delete row - styled red to match the rejected proposal pill
-                background. variant="destructive" tells the base
-                DropdownMenuItem CSS to set the icon + text + hover-fill to
-                the destructive palette automatically; we override the
-                hover background to use the exact rejected-tag tones so the
-                visual language stays consistent across the app.
-              */}
+              {/* Solid red, matching the file menu's Delete. */}
               <AnimatedMenuIconItem
                 icon={DeleteIcon}
-                variant="destructive"
-                // Subtle red wash on hover - kept light so the menu reads
-                // calm. In dark mode the tint is just a 16% red over the
-                // surface; the destructive base styles handle text colour.
-                className="text-[13px] focus:bg-[#FEF2F2] dark:focus:bg-[rgba(248,113,113,0.10)]"
+                className="bg-[#DC2626] text-[13px] text-white hover:bg-[#B91C1C] hover:text-white focus:bg-[#B91C1C] focus:text-white data-[highlighted]:bg-[#B91C1C] data-[highlighted]:text-white"
                 onSelect={onDelete}
               >
                 Delete

@@ -279,7 +279,7 @@ export function CreedShell({
                 const content = (
                   <>
                     <span
-                      className="h-2.5 w-2.5 shrink-0 rounded-full lg:h-1.5 lg:w-1.5"
+                      className="h-2.5 w-2.5 shrink-0 rounded-[3px] lg:h-1.5 lg:w-1.5 lg:rounded-[2px]"
                       style={{
                         // Pending-delete dot turns red so the row reads as
                         // a coherent "this is being removed" signal rather
@@ -364,7 +364,7 @@ export function CreedShell({
                   aria-label={`Proposed: ${row.name}`}
                 >
                   <span
-                    className="h-2.5 w-2.5 shrink-0 rounded-full lg:h-1.5 lg:w-1.5"
+                    className="h-2.5 w-2.5 shrink-0 rounded-[3px] lg:h-1.5 lg:w-1.5 lg:rounded-[2px]"
                     style={{ backgroundColor: "#10B981" }}
                   />
                   <span className="hidden truncate lg:inline">{row.name}</span>
@@ -389,7 +389,7 @@ export function CreedShell({
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="h-auto w-full min-w-0 justify-center rounded-md border-0 bg-transparent px-1 py-1 transition-colors hover:bg-[var(--creed-surface-raised)] aria-expanded:bg-[var(--creed-surface-raised)] lg:justify-between lg:bg-transparent lg:px-2.5 lg:py-1.5"
+                    className="h-auto w-full min-w-0 justify-center rounded-[10px] border-0 bg-transparent px-1 py-1 transition-colors hover:bg-[var(--creed-surface-raised)] aria-expanded:bg-[var(--creed-surface-raised)] dark:hover:bg-[var(--creed-surface-raised)] lg:justify-between lg:bg-transparent lg:px-2.5 lg:py-1.5"
                   >
                     <span className="flex min-w-0 w-full items-center justify-center gap-2.5 lg:justify-start">
                       <Avatar className="h-6 w-6 overflow-hidden rounded-[8px] border border-[var(--creed-border)] bg-[var(--creed-surface-raised)] after:rounded-[8px]">
@@ -504,7 +504,8 @@ function ThemeToggleMenuItem() {
     >
       <span className="flex items-center gap-2">
         <ContrastIcon ref={iconRef} size={14} className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center leading-none" />
-        <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+        <span className="md:hidden">Theme</span>
+        <span className="hidden md:inline">{theme === "dark" ? "Light mode" : "Dark mode"}</span>
       </span>
       <kbd className="inline-flex h-5 w-5 items-center justify-center rounded border border-[var(--creed-border)] bg-[var(--creed-surface-raised)] text-[10px] font-medium text-[var(--creed-text-secondary)]">
         M

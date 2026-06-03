@@ -59,6 +59,9 @@
   --creed-background: #f9f9f8;
   --creed-surface: #ffffff;
   --creed-surface-raised: #f3f3f1;
+  /* Selected row in menus/selects. Sits ~6 off the hover tone (surface-raised
+     #f3f3f1): lighter in light mode, darker in dark mode, same magnitude. */
+  --creed-surface-selected: #f9f9f8;
   --creed-border: #e6e6e2;
   --creed-border-strong: #d6d6d0;
   --creed-text-primary: #1f1f1a;
@@ -132,6 +135,9 @@
   --creed-background: #0e0e0d;
   --creed-surface: #161615;
   --creed-surface-raised: #1f1f1d;
+  /* Darker than the hover tone (a recessed "selected" look) but kept off the
+     near-black page background so it doesn't read as a hole. */
+  --creed-surface-selected: #121211;
   --creed-border: #262624;
   --creed-border-strong: #34342f;
   --creed-text-primary: #e7e7e2;
@@ -420,12 +426,55 @@
   margin: 0;
 }
 
+/* Squircle bullet markers (no round dots). Radius is ~33% of the marker so it
+   reads as a soft square at any size. */
 .ProseMirror .creed-list-bullet {
-  list-style-type: disc;
+  list-style: none;
+  padding-left: 0;
+}
+
+.ProseMirror .creed-list-bullet > li {
+  position: relative;
+  padding-left: 1.3em;
+}
+
+.ProseMirror .creed-list-bullet > li::before {
+  content: "";
+  position: absolute;
+  left: 0.1em;
+  top: 0.6em;
+  width: 0.42em;
+  height: 0.42em;
+  border-radius: 0.14em;
+  background: var(--section-accent-bar, var(--creed-text-secondary));
 }
 
 .ProseMirror .creed-list-ordered {
   list-style-type: decimal;
+}
+
+/* Reusable squircle bullet list for plain JSX lists (docs, marketing, etc.).
+   Set --creed-bullet on the <ul> to colour the markers; defaults to the text
+   colour. Apply to the <ul>; <li> needs no marker classes. */
+.creed-bullets {
+  list-style: none;
+  padding-left: 0;
+}
+
+.creed-bullets > li {
+  position: relative;
+  padding-left: 1.3em;
+}
+
+.creed-bullets > li::before {
+  content: "";
+  position: absolute;
+  left: 0.1em;
+  top: 0.66em;
+  width: 0.4em;
+  height: 0.4em;
+  border-radius: 0.13em;
+  background: var(--creed-bullet, currentColor);
 }
 
 .ProseMirror .creed-list-item > p {

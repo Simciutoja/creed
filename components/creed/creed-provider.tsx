@@ -33,8 +33,10 @@ import {
   initialCreedState,
   normalizeLegacyProposalDraft,
   normalizeProposalForSection,
+  permissionToWritable,
   type AccentKey,
   type ActivityEntry,
+  type AgentPermission,
   type CreedSection,
   type CreedSettings,
   type CreedState,
@@ -61,7 +63,8 @@ type CreedContextValue = {
   acceptProposals: (proposalIds: string[]) => void;
   rejectProposal: (proposalId: string) => void;
   editProposalDraft: (proposalId: string, draft: ProposalDraft) => void;
-  setRequireApproval: (value: boolean) => void;
+  setSectionPermission: (sectionId: string, permission: AgentPermission) => void;
+  setAllSectionPermissions: (permission: "read-only" | "propose" | "direct") => void;
   setVersionControlConfig: (patch: Partial<CreedSettings["versionControl"]>) => void;
   setDisplayName: (name: string) => void;
   refreshState: () => Promise<void>;
@@ -238,6 +241,7 @@ function createSectionFromProposalDraft(proposal: Proposal): CreedSection | null
       }),
     content,
     agentWritable: true,
+    agentPermission: "propose",
     lastEditedBy: proposal.agentName,
     lastEditedType: "agent",
     lastEditedLabel: "just now",
@@ -537,6 +541,7 @@ export function CreedProvider({
       accent: "custom",
       content: starter ?? createStarterContent(trimmedName),
       agentWritable: true,
+      agentPermission: "propose",
       lastEditedBy: "You",
       lastEditedType: "user",
       lastEditedLabel: "just now",
@@ -563,6 +568,7 @@ export function CreedProvider({
       accent: "custom",
       content: starter ?? createStarterContent(trimmedName),
       agentWritable: true,
+      agentPermission: "propose",
       lastEditedBy: "You",
       lastEditedType: "user",
       lastEditedLabel: "just now",
@@ -931,14 +937,39 @@ export function CreedProvider({
     );
   }
 
-  function setRequireApproval(value: boolean) {
+  function setSectionPermission(sectionId: string, permission: AgentPermission) {
     commitState((current) =>
       nextMutationTick({
         ...current,
-        settings: {
-          ...current.settings,
-          requireApproval: value,
-        },
+        syncLabel: "Saved just now",
+        sections: current.sections.map((section) =>
+          section.id === sectionId
+            ? { ...section, agentPermission: permission, agentWritable: permissionToWritable(permission) }
+            : section
+        ),
+      })
+    );
+  }
+
+  // Bulk lever behind the global control: set every non-hidden section to one
+  // level, preserving explicit "hidden" locks (a private section shouldn't be
+  // re-exposed by a set-all). Also updates the global default used for newly
+  // created sections.
+  function setAllSectionPermissions(permission: "read-only" | "propose" | "direct") {
+    commitState((current) =>
+      nextMutationTick({
+        ...current,
+        syncLabel: "Saved just now",
+        settings: { ...current.settings, requireApproval: permission !== "direct" },
+        sections: current.sections.map((section) =>
+          section.agentPermission === "hidden"
+            ? section
+            : {
+                ...section,
+                agentPermission: permission,
+                agentWritable: permissionToWritable(permission),
+              }
+        ),
       })
     );
   }
@@ -1115,7 +1146,8 @@ export function CreedProvider({
       acceptProposals,
       rejectProposal,
       editProposalDraft,
-      setRequireApproval,
+      setSectionPermission,
+      setAllSectionPermissions,
       setVersionControlConfig,
       setDisplayName,
       refreshState: syncFromServer,
@@ -1146,7 +1178,8 @@ export function CreedProvider({
       acceptProposals,
       rejectProposal,
       editProposalDraft,
-      setRequireApproval,
+      setSectionPermission,
+      setAllSectionPermissions,
       setVersionControlConfig,
       setDisplayName,
       syncFromServer,

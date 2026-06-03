@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type {
   AccentKey,
   ActivityEntry,
+  AgentPermission,
   CreedSection,
 } from "@/lib/creed-data";
 import {
@@ -14,6 +15,7 @@ import {
   normalizeLegacyAccent,
   normalizeLegacyProposalDraft,
   normalizeLegacySectionId,
+  permissionToWritable,
 } from "@/lib/creed-data";
 import {
   findUserIdByDirectEditToken,
@@ -25,6 +27,20 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { markdownToRichHtml, normalizeRichTextInput } from "@/lib/rich-text";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseAdminConfigured } from "@/lib/supabase/env";
+
+// This is the direct-edit endpoint, so every mutation here requires the target
+// section's permission to be "direct". Propose sections must go through the
+// proposals route; read-only / hidden sections aren't editable at all.
+function assertDirectAllowed(section: CreedSection) {
+  if (section.agentPermission === "direct") {
+    return null;
+  }
+  const reason =
+    section.agentPermission === "propose"
+      ? "requires approval - submit a proposal instead of a direct edit"
+      : "is not editable by agents";
+  return NextResponse.json({ error: `Section ${section.id} ${reason}.` }, { status: 403 });
+}
 
 // Under the unified model every section is rich-text. Legacy patch kinds are
 // accepted for back-compat with older agents and coerced into rich-text
@@ -223,7 +239,11 @@ function buildAfterTextFromLegacyDraft(draft: LegacyGovernedDraft) {
   return getProposalPreviewText(normalizeLegacyProposalDraft(draft));
 }
 
-function createNewSection(input: CreateSectionInput, agentName: string): CreedSection {
+function createNewSection(
+  input: CreateSectionInput,
+  agentName: string,
+  defaultPermission: AgentPermission
+): CreedSection {
   const content = normalizeRichTextInput(input);
   return {
     id: `section-${Date.now()}`,
@@ -238,7 +258,8 @@ function createNewSection(input: CreateSectionInput, agentName: string): CreedSe
         insertAfterSectionId: input.insertAfterSectionId,
       }),
     content: content || markdownToRichHtml("Start shaping this section."),
-    agentWritable: true,
+    agentWritable: permissionToWritable(defaultPermission),
+    agentPermission: defaultPermission,
     lastEditedBy: agentName,
     lastEditedType: "agent",
     lastEditedLabel: "just now",
@@ -308,9 +329,6 @@ export async function POST(request: Request) {
     proposalLimit: 1,
     activityLimit: 1,
   });
-  if (result.state.settings.requireApproval) {
-    return NextResponse.json({ error: "Direct edits are disabled while approval is required." }, { status: 403 });
-  }
 
   const body = (await request.json()) as DirectWriteBody;
 
@@ -347,7 +365,11 @@ export async function POST(request: Request) {
       kind: "rich-text",
     };
 
-    const newSection = createNewSection(normalizedSection, agentName);
+    const newSection = createNewSection(
+      normalizedSection,
+      agentName,
+      result.state.settings.requireApproval ? "propose" : "direct"
+    );
     const insertAfterIndex = normalizedSection.insertAfterSectionId
       ? result.state.sections.findIndex((section) => section.id === normalizedSection.insertAfterSectionId)
       : -1;
@@ -391,11 +413,9 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    if (!target.agentWritable) {
-      return NextResponse.json(
-        { error: `Section ${target.id} is not agent-writable.` },
-        { status: 403 }
-      );
+    const targetDenied = assertDirectAllowed(target);
+    if (targetDenied) {
+      return targetDenied;
     }
 
     nextSections = result.state.sections.filter((section) => section.id !== target.id);
@@ -437,11 +457,9 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    if (!target.agentWritable) {
-      return NextResponse.json(
-        { error: `Section ${target.id} is not agent-writable.` },
-        { status: 403 }
-      );
+    const targetDenied = assertDirectAllowed(target);
+    if (targetDenied) {
+      return targetDenied;
     }
 
     nextSections = result.state.sections.map((section) =>
@@ -495,11 +513,9 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    if (!target.agentWritable) {
-      return NextResponse.json(
-        { error: `Section ${target.id} is not agent-writable.` },
-        { status: 403 }
-      );
+    const targetDenied = assertDirectAllowed(target);
+    if (targetDenied) {
+      return targetDenied;
     }
 
     nextSections = result.state.sections.map((section) =>
@@ -545,11 +561,9 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    if (!target.agentWritable) {
-      return NextResponse.json(
-        { error: `Section ${target.id} is not agent-writable.` },
-        { status: 403 }
-      );
+    const targetDenied = assertDirectAllowed(target);
+    if (targetDenied) {
+      return targetDenied;
     }
 
     const hasAfter = typeof body.afterSectionId === "string" && body.afterSectionId.length > 0;
@@ -640,11 +654,9 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    if (!target.agentWritable) {
-      return NextResponse.json(
-        { error: `Section ${target.id} is not agent-writable.` },
-        { status: 403 }
-      );
+    const targetDenied = assertDirectAllowed(target);
+    if (targetDenied) {
+      return targetDenied;
     }
     if (!body.contentMarkdown?.trim() && !body.contentHtml?.trim()) {
       return NextResponse.json(
@@ -704,11 +716,9 @@ export async function POST(request: Request) {
     if (!currentSection) {
       return NextResponse.json({ error: "Target section is not present in this Creed." }, { status: 400 });
     }
-    if (!currentSection.agentWritable) {
-      return NextResponse.json(
-        { error: `Section ${currentSection.id} is not agent-writable.` },
-        { status: 403 }
-      );
+    const currentDenied = assertDirectAllowed(currentSection);
+    if (currentDenied) {
+      return currentDenied;
     }
 
     nextSections = result.state.sections.map((section) =>
@@ -773,11 +783,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Target section is not present in this Creed." }, { status: 400 });
     }
 
-    if (!currentSection.agentWritable) {
-      return NextResponse.json(
-        { error: `Section ${legacySectionId} is not agent-writable.` },
-        { status: 403 }
-      );
+    const legacyDenied = assertDirectAllowed(currentSection);
+    if (legacyDenied) {
+      return legacyDenied;
     }
 
     nextSections = result.state.sections.map((section) =>

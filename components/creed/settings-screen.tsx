@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ComponentType,
+  type ReactNode,
+  type Ref,
+} from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import type { UserIdentity } from "@supabase/supabase-js";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
@@ -12,6 +20,14 @@ import {
   Unplug,
 } from "lucide-react";
 import { DownloadIcon } from "@/components/ui/download";
+import { EyeIcon } from "@/components/ui/eye";
+import { EyeOffIcon } from "@/components/ui/eye-off";
+import { PenToolIcon } from "@/components/ui/pen-tool";
+import { ShieldCheckIcon } from "@/components/ui/shield-check";
+import {
+  useAnimatedIconControls,
+  type AnimatedIconHandle,
+} from "@/components/creed/animated-icon-controls";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
@@ -29,7 +45,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { RoundedTopBar } from "@/components/creed/rounded-bar";
+import { StackTopBar } from "@/components/creed/rounded-bar";
 import { AnimatedIconButton } from "@/components/creed/animated-icon-action";
 import { toast } from "sonner";
 import { SearchableSelect } from "@/components/creed/searchable-select";
@@ -61,7 +77,11 @@ import {
   type AiModelQuality,
 } from "@/lib/ai/model-catalog";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
-import type { IntegrationConnectionStatus } from "@/lib/creed-data";
+import {
+  accentColorMap,
+  type AgentPermission,
+  type IntegrationConnectionStatus,
+} from "@/lib/creed-data";
 import { cn } from "@/lib/utils";
 
 const GITHUB_CONNECTED_EVENT = "creed:github-connected";
@@ -114,7 +134,8 @@ export function SettingsScreen() {
   const {
     state,
     setDisplayName,
-    setRequireApproval,
+    setSectionPermission,
+    setAllSectionPermissions,
     setVersionControlConfig,
     exportMarkdown,
     exportActivityJson,
@@ -124,6 +145,7 @@ export function SettingsScreen() {
   } = useCreed();
   const [nameDraft, setNameDraft] = useState(state.user.name);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [permsOpen, setPermsOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [connectingGitHub, setConnectingGitHub] = useState(false);
   const [disconnectingGitHub, setDisconnectingGitHub] = useState(false);
@@ -146,6 +168,15 @@ export function SettingsScreen() {
   const [usage, setUsage] = useState<AiUsageSummary | null>(null);
   const [aiModels, setAiModels] = useState<AiModelCatalogItem[]>(AI_MODEL_CATALOG);
   const canSaveAiKey = looksLikeApiKey(aiKeyDraft) && !aiSaving;
+
+  // The global control reflects the shared level of all non-hidden sections,
+  // or nothing when they differ (mixed). Hidden sections are ignored here.
+  const uniformPermission: AgentPermission | null = (() => {
+    const perms = state.sections
+      .filter((section) => section.agentPermission !== "hidden")
+      .map((section) => section.agentPermission);
+    return perms.length > 0 && perms.every((perm) => perm === perms[0]) ? perms[0] : null;
+  })();
 
   // Summary line for the Data card: gives the export buttons a sense of
   // weight ("this is everything you've built") without being a dashboard.
@@ -170,6 +201,10 @@ export function SettingsScreen() {
     state.settings.versionControl.repoOwner && state.settings.versionControl.repoName
       ? `${state.settings.versionControl.repoOwner}/${state.settings.versionControl.repoName}`
       : "";
+  const latestCommitUrl =
+    selectedRepoFullName && versionStatus?.remoteSha
+      ? `https://github.com/${selectedRepoFullName}/commit/${versionStatus.remoteSha}`
+      : null;
 
   useEffect(() => {
     function handleGitHubConnected() {
@@ -640,20 +675,79 @@ export function SettingsScreen() {
             <h2 className="text-[16px] font-medium text-[var(--creed-text-primary)]">
               Agent edit behaviour
             </h2>
-            <div className="mt-4 rounded-[var(--radius-xl)] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5">
-              <div className="flex items-start justify-between gap-5">
+            <div className="mt-4 rounded-[var(--radius-xl)] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5 pb-4">
+              <div className="flex items-center justify-between gap-5 md:items-start">
                 <div>
                   <div className="text-[15px] font-medium text-[var(--creed-text-primary)]">
-                    Require approval for agent edits
+                    All sections
                   </div>
                   <div className="mt-2 hidden max-w-xl text-[14px] leading-7 text-[var(--creed-text-secondary)] md:block">
-                    When enabled, agent-proposed changes appear in your file for review.
+                    Set every section at once, and the default for new ones.
                   </div>
                 </div>
-                <ApprovalToggle
-                  checked={state.settings.requireApproval}
-                  onChange={setRequireApproval}
+                <SectionPermissionControl
+                  value={uniformPermission}
+                  onChange={(permission) => {
+                    if (permission !== "hidden") {
+                      setAllSectionPermissions(permission);
+                    }
+                  }}
+                  layoutGroup="all-sections"
+                  options={GLOBAL_PERMISSION_OPTIONS}
                 />
+              </div>
+
+              <div className="mt-5 border-t border-[var(--creed-border)] pt-4">
+                <button
+                  type="button"
+                  onClick={() => setPermsOpen((open) => !open)}
+                  className="flex w-full items-center justify-between text-left"
+                >
+                  <span className="text-[14px] font-medium text-[var(--creed-text-primary)]">
+                    Per-section permissions
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 shrink-0 text-[var(--creed-text-secondary)] transition-transform duration-200",
+                      permsOpen && "rotate-180"
+                    )}
+                  />
+                </button>
+                <AnimatePresence initial={false}>
+                  {permsOpen ? (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0, y: -8 }}
+                      animate={{ height: "auto", opacity: 1, y: 0 }}
+                      exit={{ height: 0, opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-4 space-y-1">
+                        {state.sections.map((section) => (
+                          <div
+                            key={section.id}
+                            className="flex items-center justify-between gap-3 rounded-[10px] py-1.5"
+                          >
+                            <div className="flex min-w-0 items-center gap-2.5">
+                              <span
+                                className="h-2.5 w-2.5 shrink-0 rounded-[3px]"
+                                style={{ backgroundColor: accentColorMap[section.accent] }}
+                              />
+                              <span className="truncate text-[14px] text-[var(--creed-text-primary)]">
+                                {section.name}
+                              </span>
+                            </div>
+                            <SectionPermissionControl
+                              value={section.agentPermission}
+                              onChange={(permission) => setSectionPermission(section.id, permission)}
+                              layoutGroup={section.id}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
               </div>
             </div>
           </section>
@@ -900,13 +994,26 @@ export function SettingsScreen() {
                     creed.md
                   </span>
                   {versionStatus?.remoteMessage ? (
-                    <>
-                      <span className="text-[var(--creed-text-tertiary)]">·</span>
-                      <span>Last commit</span>
-                      <span className="truncate font-mono text-[var(--creed-text-primary)]">
-                        {versionStatus.remoteMessage}
+                    <span className="inline-flex min-w-0 items-center gap-2">
+                      <span aria-hidden className="shrink-0 text-[var(--creed-text-tertiary)]">
+                        ·
                       </span>
-                    </>
+                      {latestCommitUrl ? (
+                        <a
+                          href={latestCommitUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={versionStatus.remoteMessage}
+                          className="truncate font-medium text-[#2563EB] transition-colors hover:text-[#1D4ED8]"
+                        >
+                          {versionStatus.remoteMessage}
+                        </a>
+                      ) : (
+                        <span className="truncate text-[var(--creed-text-secondary)]">
+                          {versionStatus.remoteMessage}
+                        </span>
+                      )}
+                    </span>
                   ) : null}
                 </div>
               </div>
@@ -1001,7 +1108,7 @@ export function SettingsScreen() {
             </DialogTitle>
           </DialogHeader>
           <p className="text-[14px] leading-7 text-[var(--creed-text-secondary)]">
-            This deletes your account and everything attached to it. This cannot be undone.
+            This deletes your account and everything linked to it. This cannot be undone.
           </p>
           <div className="mt-2 flex items-center justify-between gap-3">
             <Button variant="ghost" className="rounded-md" onClick={() => setDeleteOpen(false)}>
@@ -1059,7 +1166,7 @@ function IntegrationRow({
             {statusLabel ? (
               <span
                 className={cn(
-                  "inline-flex items-center gap-1.5 whitespace-nowrap rounded-[6px] px-1.5 py-0.5 text-[11px] font-medium",
+                  "inline-flex items-center whitespace-nowrap rounded-[6px] px-1.5 py-0.5 text-[11px] font-medium",
                   isConnected
                     ? "bg-[#ECFDF5] text-[#047857] dark:bg-[#052e1a]/50 dark:text-[#4ade80]"
                     : isDisconnected
@@ -1067,16 +1174,6 @@ function IntegrationRow({
                       : "bg-[var(--creed-surface-raised)] text-[var(--creed-text-secondary)]"
                 )}
               >
-                <span
-                  className={cn(
-                    "h-1.5 w-1.5 rounded-full",
-                    isConnected
-                      ? "bg-[#10B981]"
-                      : isDisconnected
-                        ? "bg-[#DC2626]"
-                        : "bg-[var(--creed-text-tertiary)]"
-                  )}
-                />
                 {statusLabel}
               </span>
             ) : null}
@@ -1121,7 +1218,7 @@ function ModelSelect({
 
         return (
           <div className="flex min-w-0 items-center gap-3">
-            <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: quality.color }} />
+            <span className="h-2.5 w-2.5 shrink-0 rounded-[3px]" style={{ backgroundColor: quality.color }} />
             <div className="min-w-0 flex-1">
               <div className="truncate text-[14px] font-medium text-[var(--creed-text-primary)]">
                 {model.name}
@@ -1207,7 +1304,7 @@ function UsageCard({
                 onSelect={() => onRangeChange(item)}
                 className={cn(
                   "flex items-center justify-between gap-5 rounded-lg px-3 py-2 text-[13px]",
-                  range === item && "bg-[var(--creed-background)] font-medium"
+                  range === item && "bg-[var(--creed-surface-selected)] font-medium"
                 )}
               >
                 <span>{item}</span>
@@ -1220,49 +1317,71 @@ function UsageCard({
         </DropdownMenu>
       </div>
 
-      {chartData.length > 0 ? (
-        <ChartContainer config={chartConfig} className="mt-5 aspect-auto h-[120px] w-full">
-          <BarChart data={chartData} margin={{ left: 4, right: 4, top: 8, bottom: 0 }}>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-            <XAxis dataKey="date" hide />
-            <YAxis hide />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => formatUsageDate(String(value))}
-                  formatter={(value, name, item) => (
-                    <div className="flex w-full items-center justify-between gap-3">
-                      <span className="flex items-center gap-1.5 text-[var(--creed-text-secondary)]">
-                        <span
-                          className="h-2.5 w-2.5 rounded-[2px]"
-                          style={{ backgroundColor: item.color ?? item.payload?.fill }}
-                        />
-                        {chartConfig[String(name)]?.label ?? name}
-                      </span>
-                      <span className="font-mono text-[var(--creed-text-primary)]">
-                        ${Number(value).toFixed(2)}
-                      </span>
-                    </div>
-                  )}
-                />
-              }
-            />
-            {present.map((quality, index) => (
-              <Bar
-                key={quality}
-                dataKey={quality}
-                stackId="cost"
-                fill={`var(--color-${quality})`}
-                shape={index === present.length - 1 ? <RoundedTopBar /> : undefined}
-              />
-            ))}
-          </BarChart>
-        </ChartContainer>
-      ) : (
-        <div className="mt-5 flex h-[120px] items-center text-[13px] leading-6 text-[var(--creed-text-secondary)]">
-          Spend appears here after Creed uses your key.
-        </div>
-      )}
+      <div className="relative mt-5 h-[120px] w-full">
+        <AnimatePresence initial={false}>
+          <motion.div
+            // Cross-fade between states on timeframe change. The populated
+            // chart keeps a stable key so recharts morphs its bars across
+            // ranges; the empty state is keyed per-range so it re-animates
+            // (and updates its caption) when you switch the timeframe.
+            key={chartData.length > 0 ? "chart" : `empty-${range}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0"
+          >
+            {chartData.length > 0 ? (
+              <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+                <BarChart data={chartData} margin={{ left: 4, right: 4, top: 8, bottom: 0 }}>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                  <XAxis dataKey="date" hide />
+                  <YAxis hide />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        labelFormatter={(value) => formatUsageDate(String(value))}
+                        formatter={(value, name, item) => (
+                          <div className="flex w-full items-center justify-between gap-3">
+                            <span className="flex items-center gap-1.5 text-[var(--creed-text-secondary)]">
+                              <span
+                                className="h-2.5 w-2.5 rounded-[2px]"
+                                style={{ backgroundColor: item.color ?? item.payload?.fill }}
+                              />
+                              {chartConfig[String(name)]?.label ?? name}
+                            </span>
+                            <span className="font-mono text-[var(--creed-text-primary)]">
+                              ${Number(value).toFixed(2)}
+                            </span>
+                          </div>
+                        )}
+                      />
+                    }
+                  />
+                  {present.map((quality) => (
+                    <Bar
+                      key={quality}
+                      dataKey={quality}
+                      stackId="cost"
+                      fill={`var(--color-${quality})`}
+                      shape={<StackTopBar orderedKeys={present} dataKey={quality} />}
+                    />
+                  ))}
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className="relative flex h-full items-center justify-center">
+                {/* Faint zero baseline echoing the chart grid, so the empty
+                    state reads as a chart at $0 rather than a bare message. */}
+                <div className="absolute inset-x-0 bottom-0 border-t border-dashed border-[var(--creed-border)]" />
+                <span className="text-[12px] text-[var(--creed-text-tertiary)]">
+                  No spend in the last {range.replace("d", " days")}
+                </span>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
@@ -1304,31 +1423,120 @@ function GitHubMark({ className }: { className?: string }) {
   );
 }
 
-function ApprovalToggle({
-  checked,
-  onChange,
+type AnimatedIconComponent = ComponentType<{
+  ref?: Ref<AnimatedIconHandle>;
+  size?: number;
+  className?: string;
+}>;
+
+const PERMISSION_OPTIONS: Array<{
+  value: AgentPermission;
+  label: string;
+  icon: AnimatedIconComponent;
+  color: string;
+}> = [
+  { value: "hidden", label: "Hidden from agent", icon: EyeOffIcon, color: "#DC2626" },
+  { value: "read-only", label: "Read-only", icon: EyeIcon, color: "#EAB308" },
+  { value: "propose", label: "Propose (needs approval)", icon: ShieldCheckIcon, color: "#16A34A" },
+  { value: "direct", label: "Direct edit", icon: PenToolIcon, color: "#2563EB" },
+];
+
+// The global control reuses the same control without the "hidden" option.
+const GLOBAL_PERMISSION_OPTIONS = PERMISSION_OPTIONS.filter((option) => option.value !== "hidden");
+
+// One segment. Hover plays the icon's animation through the shared controls
+// hook, exactly like AnimatedIconButton elsewhere on the site.
+function PermissionSegment({
+  option,
+  selected,
+  layoutGroup,
+  muted = false,
+  onSelect,
 }: {
-  checked: boolean;
-  onChange: (value: boolean) => void;
+  option: (typeof PERMISSION_OPTIONS)[number];
+  selected: boolean;
+  layoutGroup: string;
+  muted?: boolean;
+  onSelect: () => void;
 }) {
+  const { iconRef, start, settle } = useAnimatedIconControls();
+  const Icon = option.icon;
   return (
     <button
       type="button"
-      aria-pressed={checked}
-      onClick={() => onChange(!checked)}
-      className={cn(
-        "relative flex h-8 w-14 shrink-0 items-center rounded-full border transition-colors duration-200",
-        checked
-          ? "border-[#10B981] bg-[#10B981]"
-          : "border-[#DC2626] bg-[#DC2626]"
-      )}
+      aria-label={option.label}
+      aria-pressed={selected}
+      title={option.label}
+      onClick={onSelect}
+      // When the control is greyed (mixed state) skip the hover animation so
+      // the icons read as inactive.
+      onMouseEnter={muted ? undefined : start}
+      onMouseLeave={muted ? undefined : settle}
+      className="group relative inline-flex h-7 w-7 items-center justify-center rounded-[7px] transition-colors duration-150"
     >
-      <span
+      {selected ? (
+        <motion.span
+          layoutId={`perm-highlight-${layoutGroup}`}
+          className="absolute inset-0 rounded-[7px]"
+          style={{ backgroundColor: option.color }}
+          transition={{ type: "spring", stiffness: 520, damping: 40 }}
+        />
+      ) : null}
+      <Icon
+        ref={iconRef}
+        size={14}
+        // pointer-events-none so the whole button is the click/hover target,
+        // not just the 14px glyph. The icon brightens on hover via group-hover
+        // (the button's hover), since its own :hover can't fire with pointer
+        // events disabled.
         className={cn(
-          "absolute left-1 h-6 w-6 rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.22)] transition-transform duration-200",
-          checked && "translate-x-6"
+          "pointer-events-none relative inline-flex h-3.5 w-3.5 items-center justify-center transition-colors duration-150",
+          selected
+            ? "text-white"
+            : muted
+              ? "text-[var(--creed-text-tertiary)]"
+              : "text-[var(--creed-text-tertiary)] group-hover:text-[var(--creed-text-primary)]"
         )}
       />
     </button>
   );
 }
+
+// Compact icon-segmented control. The selected segment fills with its level
+// colour and the highlight slides between segments via a shared layoutId.
+// `layoutGroup` scopes that animation to one row so highlights don't fly
+// between sections.
+function SectionPermissionControl({
+  value,
+  onChange,
+  layoutGroup,
+  options = PERMISSION_OPTIONS,
+}: {
+  value: AgentPermission | null;
+  onChange: (permission: AgentPermission) => void;
+  layoutGroup: string;
+  options?: typeof PERMISSION_OPTIONS;
+}) {
+  return (
+    <div
+      className={cn(
+        "inline-flex shrink-0 items-center gap-0.5 rounded-[10px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-0.5 transition-opacity duration-150",
+        // No shared level (sections differ): grey the control to read as
+        // "mixed / not applied", but it stays clickable to set one level.
+        value === null && "opacity-45"
+      )}
+    >
+      {options.map((option) => (
+        <PermissionSegment
+          key={option.value}
+          option={option}
+          selected={value === option.value}
+          layoutGroup={layoutGroup}
+          muted={value === null}
+          onSelect={() => onChange(option.value)}
+        />
+      ))}
+    </div>
+  );
+}
+

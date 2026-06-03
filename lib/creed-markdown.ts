@@ -117,6 +117,7 @@ function parseSectionBody(
       // every connected agent (Codex, Claude, etc.) says "no editable
       // sections" even though the content is in the read payload.
       agentWritable: true,
+      agentPermission: "propose",
       lastEditedBy: "GitHub",
       lastEditedType: "user",
       lastEditedLabel: "just now",

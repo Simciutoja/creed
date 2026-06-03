@@ -51,12 +51,6 @@ export async function POST(request: Request) {
         remoteContentHash: remoteFile.contentHash,
         warnings: parsed.warnings,
         sections: parsed.sections,
-        summary: parsed.sections.map((section) => ({
-          id: section.id,
-          name: section.name,
-          kind: section.kind,
-          accent: section.accent,
-        })),
       };
     });
 

@@ -267,9 +267,14 @@ export async function POST(request: Request) {
     }
   }
 
-  if (!isNewSectionProposal && targetSection && !targetSection.agentWritable) {
+  // Read-only and hidden sections don't accept proposals; propose + direct do.
+  if (
+    !isNewSectionProposal &&
+    targetSection &&
+    (targetSection.agentPermission === "read-only" || targetSection.agentPermission === "hidden")
+  ) {
     return NextResponse.json(
-      { error: `Section ${targetSection.id} is not agent-writable.` },
+      { error: `Section ${targetSection.id} is read-only and does not accept proposals.` },
       { status: 403 }
     );
   }

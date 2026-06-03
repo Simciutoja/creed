@@ -19,6 +19,7 @@ function makeSection(overrides: Partial<CreedSection> & { content: string }): Cr
     name: "Test Section",
     accent: "custom",
     agentWritable: false,
+    agentPermission: "read-only",
     lastEditedBy: "You",
     lastEditedType: "user",
     lastEditedLabel: "just now",

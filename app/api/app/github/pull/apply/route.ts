@@ -30,6 +30,7 @@ export async function POST(request: Request) {
     const importedSections = body.sections.map((section) => ({
       ...section,
       agentWritable: true,
+      agentPermission: "propose" as const,
     }));
     const nextState = {
       ...result.state,

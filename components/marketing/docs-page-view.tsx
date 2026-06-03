@@ -90,7 +90,7 @@ const sections: DocsSection[] = [
       "Every MCP client connects from the same server URL. These are the per-client steps; each one ends with a browser approval.",
     ],
     bullets: [
-      "Claude Code: run claude mcp add --transport http creed https://creed.md/mcp, then /mcp to authorize in the browser.",
+      "Claude Code: run claude mcp add -t http creed https://creed.md/mcp, then /mcp to authorize in the browser.",
       "Codex: run codex mcp add creed --url https://creed.md/mcp, then codex mcp login creed to authorize.",
       "Cursor: use the one-click Add MCP button on the Connections page, then authorize in the browser.",
       "OpenCode: add Creed to opencode.json as a remote server (type remote, the server URL), then run opencode mcp auth creed to authorize.",
@@ -192,16 +192,18 @@ const sections: DocsSection[] = [
     ],
   },
   {
-    id: "direct-edit-vs-proposal-mode",
-    label: "Direct edit vs proposal mode",
-    title: "Direct edit vs proposal mode",
+    id: "per-section-permissions",
+    label: "Per-section permissions",
+    title: "Per-section permissions",
     paragraphs: [
-      "Creed can run in reviewed proposal mode or trusted direct-edit mode. The mechanics differ, but the standard stays the same: only durable, profile-worthy context belongs in the file.",
+      "Each section sets its own agent permission, so you can keep part of your profile reference-only and let agents maintain the rest. The mechanics differ per section, but the standard stays the same: only durable, profile-worthy context belongs in the file.",
     ],
     bullets: [
-      "Proposal mode is the default reviewed path. Agents suggest updates and you decide what enters the profile.",
-      "Direct-edit mode is the trusted path when approval is off. Agents may edit directly, but they should still protect the profile with the same restraint.",
-      "Neither mode turns Creed into a scratchpad. The bar for what belongs does not move.",
+      "Propose is the default reviewed path. Agents suggest updates and you decide what enters the section.",
+      "Direct lets a trusted agent edit that section immediately, with the same restraint it would bring to a proposal.",
+      "Read-only keeps a section visible to agents for context but blocks edits and proposals.",
+      "Hidden removes a section from the agent's view entirely, so it never reaches a connected tool.",
+      "Permissions are per-section and enforced on the server. The bar for what belongs does not move.",
     ],
   },
 ];
@@ -586,11 +588,9 @@ export function DocsPageView() {
                 ) : null}
 
                 {section.bullets ? (
-                  <ul className="mt-5 space-y-3 pl-5 text-[15px] leading-8 text-[var(--creed-text-secondary)] md:text-[16px]">
+                  <ul className="creed-bullets mt-5 space-y-3 text-[15px] leading-8 text-[var(--creed-text-secondary)] [--creed-bullet:#2563EB] md:text-[16px]">
                     {section.bullets.map((item) => (
-                      <li key={item} className="list-disc marker:text-[#2563EB]">
-                        {item}
-                      </li>
+                      <li key={item}>{item}</li>
                     ))}
                   </ul>
                 ) : null}
@@ -647,11 +647,9 @@ export function DocsPageView() {
                             <div className="text-[12px] font-medium tracking-[0.02em] text-[#2563EB]">
                               What belongs
                             </div>
-                            <ul className="mt-3 space-y-2 pl-5 text-[15px] leading-7 text-[var(--creed-text-secondary)] md:text-[16px]">
+                            <ul className="creed-bullets mt-3 space-y-2 text-[15px] leading-7 text-[var(--creed-text-secondary)] [--creed-bullet:#2563EB] md:text-[16px]">
                               {guide.belongs.map((item) => (
-                                <li key={item} className="list-disc marker:text-[#2563EB]">
-                                  {item}
-                                </li>
+                                <li key={item}>{item}</li>
                               ))}
                             </ul>
                           </div>
@@ -659,11 +657,9 @@ export function DocsPageView() {
                             <div className="text-[12px] font-medium tracking-[0.02em] text-[var(--creed-text-tertiary)]">
                               What to avoid
                             </div>
-                            <ul className="mt-3 space-y-2 pl-5 text-[15px] leading-7 text-[var(--creed-text-secondary)] md:text-[16px]">
+                            <ul className="creed-bullets mt-3 space-y-2 text-[15px] leading-7 text-[var(--creed-text-secondary)] [--creed-bullet:var(--creed-text-tertiary)] md:text-[16px]">
                               {guide.avoid.map((item) => (
-                                <li key={item} className="list-disc marker:text-[var(--creed-text-tertiary)]">
-                                  {item}
-                                </li>
+                                <li key={item}>{item}</li>
                               ))}
                             </ul>
                           </div>

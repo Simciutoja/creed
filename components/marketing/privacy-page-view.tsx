@@ -254,11 +254,9 @@ export function PrivacyPageView() {
               </div>
 
               {section.bullets ? (
-                <ul className="mt-5 space-y-3 pl-5 text-[15px] leading-8 text-[var(--creed-text-secondary)] md:text-[16px]">
+                <ul className="creed-bullets mt-5 space-y-3 text-[15px] leading-8 text-[var(--creed-text-secondary)] [--creed-bullet:#2563EB] md:text-[16px]">
                   {section.bullets.map((item) => (
-                    <li key={item} className="list-disc marker:text-[#2563EB]">
-                      {item}
-                    </li>
+                    <li key={item}>{item}</li>
                   ))}
                 </ul>
               ) : null}

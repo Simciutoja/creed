@@ -37,7 +37,7 @@ export const AI_MODEL_QUALITY_META: Record<
 > = {
   excellent: {
     label: "Excellent",
-    color: "#10B981",
+    color: "#16A34A",
     tint: "#D1FAE5",
   },
   good: {
@@ -47,7 +47,7 @@ export const AI_MODEL_QUALITY_META: Record<
   },
   weak: {
     label: "Weak",
-    color: "#EF4444",
+    color: "#DC2626",
     tint: "#FEE2E2",
   },
   uncertain: {
@@ -347,8 +347,8 @@ function sortModels(models: AiModelCatalogItem[]) {
   const qualityRank: Record<AiModelQuality, number> = {
     excellent: 0,
     good: 1,
-    uncertain: 2,
-    weak: 3,
+    weak: 2,
+    uncertain: 3,
   };
 
   return [...models].sort((a, b) => {

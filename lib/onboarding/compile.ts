@@ -451,6 +451,7 @@ function makeSection(
     // Pivot: every starter section is agent-writable so AI can keep the
     // profile accurate, polished, concise, and current.
     agentWritable: partial.agentWritable ?? true,
+    agentPermission: "propose",
     lastEditedBy: "You",
     lastEditedType: "user",
     lastEditedLabel: "just now",

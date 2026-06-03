@@ -138,7 +138,10 @@ export function ConnectionsScreen() {
               className="rounded-md text-[var(--creed-text-secondary)] hover:text-[var(--creed-text-primary)]"
               onClick={() => setAgentSetupOpen((current) => !current)}
             >
-              {agentSetupOpen ? "Hide specific agents" : "Show specific agents"}
+              <span className="sm:hidden">{agentSetupOpen ? "Hide agents" : "Show agents"}</span>
+              <span className="hidden sm:inline">
+                {agentSetupOpen ? "Hide specific agents" : "Show specific agents"}
+              </span>
             </Button>
           </div>
 

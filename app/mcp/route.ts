@@ -411,7 +411,11 @@ const tools = [
 // that would only return a 403. The flat creed_* tools stay listed in both
 // modes because they degrade to proposals automatically.
 function listToolsFor(state: CreedState) {
-  if (state.settings.requireApproval) {
+  // direct_edit_creed is only useful when at least one section allows direct
+  // edits; otherwise hide it so the agent doesn't reach for a tool it'd be
+  // 403'd from.
+  const anyDirect = state.sections.some((section) => section.agentPermission === "direct");
+  if (!anyDirect) {
     return tools.filter((tool) => tool.name !== "direct_edit_creed");
   }
   return tools;
@@ -520,28 +524,39 @@ const DIRECT_EDIT_OPERATIONS = [
 ] as const;
 
 function buildWritePolicy(state: CreedState) {
-  // Writable = section.agentWritable === true. Don't hardcode IDs; the
-  // legacy three-ID filter that lived here for too long made the policy
-  // tell agents "writable: none" on every modern Creed.
-  const writableSectionIds: GovernedSectionId[] = state.sections
+  // Permissions are per-section now. Hidden sections are excluded entirely;
+  // writable = propose | direct; direct-edit targets = direct only.
+  const readableSections = state.sections.filter(
+    (section) => section.agentPermission !== "hidden"
+  );
+  const writableSectionIds: GovernedSectionId[] = readableSections
     .filter((section) => section.agentWritable)
     .map((section) => section.id);
-  const editableSections = state.sections
+  const editableSections = readableSections
     .filter((section) => section.agentWritable)
     .map((section) => ({
       id: section.id,
       name: section.name,
       kind: section.kind,
     }));
+  const sectionPermissions = readableSections.map((section) => ({
+    id: section.id,
+    name: section.name,
+    permission: section.agentPermission,
+  }));
+  const directSectionIds = readableSections
+    .filter((section) => section.agentPermission === "direct")
+    .map((section) => section.id);
+  const anyDirect = directSectionIds.length > 0;
 
   const proposalTargets = [...writableSectionIds, "new-section"];
-  const directEditTargets = state.settings.requireApproval
-    ? []
-    : [...writableSectionIds, "new-section"];
+  const directEditTargets = anyDirect ? [...directSectionIds, "new-section"] : [];
 
   return {
-    preferredMode: state.settings.requireApproval ? "proposals_only" : "direct_edit",
-    requireApproval: state.settings.requireApproval,
+    preferredMode: anyDirect ? "direct_edit" : "proposals_only",
+    requireApproval: !anyDirect,
+    modeIsMixed: new Set(readableSections.map((s) => s.agentPermission)).size > 1,
+    sectionPermissions,
     // The recommended surface for every agent. These five tools have flat
     // parameters, no mode-picking, no nested discriminators. Use them.
     recommendedTools: [
@@ -562,11 +577,9 @@ function buildWritePolicy(state: CreedState) {
     // how agents do meta operations (delete/rename/recolor) when approval
     // is on. Prefer the recommended tools above.
     proposalDraftKinds: [...PROPOSAL_DRAFT_KINDS],
-    // What operations the legacy `direct_edit_creed` tool accepts when
-    // approval is off.
-    directEditOperations: state.settings.requireApproval
-      ? []
-      : [...DIRECT_EDIT_OPERATIONS],
+    // What operations the legacy `direct_edit_creed` tool accepts (only
+    // meaningful for sections whose permission is "direct").
+    directEditOperations: anyDirect ? [...DIRECT_EDIT_OPERATIONS] : [],
     proposalTargets,
     directEditTargets,
     // Both keys point to the same agent-writable section list so consumers
@@ -630,12 +643,15 @@ async function handleToolCall(
 
   if (name === "list_sections") {
     return jsonToolResult(
-      state.sections.map((section) => ({
-        id: section.id,
-        name: section.name,
-        kind: section.kind,
-        accent: section.accent,
-      }))
+      state.sections
+        .filter((section) => section.agentPermission !== "hidden")
+        .map((section) => ({
+          id: section.id,
+          name: section.name,
+          kind: section.kind,
+          accent: section.accent,
+          permission: section.agentPermission,
+        }))
     );
   }
 
@@ -658,8 +674,10 @@ async function handleToolCall(
   }
 
   if (name === "direct_edit_creed") {
-    if (state.settings.requireApproval) {
-      throw new Error("Direct edits are disabled while approval is required. Use propose_creed_update instead.");
+    // Per-section now: the write route 403s any non-direct target. Give an
+    // early, clearer error only when no section allows direct edits at all.
+    if (!state.sections.some((section) => section.agentPermission === "direct")) {
+      throw new Error("No sections allow direct edits. Use propose_creed_update instead.");
     }
 
     await callInternalCreedRoute(request, "/api/creed/write", state.directEditToken, {
@@ -793,6 +811,7 @@ async function handleToolCall(
       kind: section.kind,
       accent: section.accent,
       agentWritable: section.agentWritable,
+      permission: section.agentPermission,
       contentHtml: section.content,
       lastEditedBy: section.lastEditedBy,
       lastEditedType: section.lastEditedType,
@@ -940,34 +959,50 @@ async function handleToolCall(
 // ---------------------------------------------------------------------------
 
 function resolveSectionOrThrow(state: CreedState, sectionId: string): CreedSection {
+  // Hidden sections are invisible to agents - they can't be read or targeted,
+  // so resolution (used by read + every mutation tool) operates on the
+  // non-hidden set only.
+  const sections = state.sections.filter((section) => section.agentPermission !== "hidden");
   if (!sectionId) {
-    const available = state.sections
+    const available = sections
       .map((s) => `${s.name} (${s.id})`)
       .join("; ");
     throw new Error(
       `Missing sectionId. Available sections: ${available || "none"}.`
     );
   }
-  const exact = state.sections.find((section) => section.id === sectionId);
+  const exact = sections.find((section) => section.id === sectionId);
   if (exact) return exact;
 
   // Be forgiving: agents sometimes pass the section *name* (e.g. "Beliefs")
   // instead of the slug ID ("beliefs"). Resolve case-insensitively against
   // both the ID and the display name before failing.
   const lower = sectionId.toLowerCase();
-  const fuzzy = state.sections.find(
+  const fuzzy = sections.find(
     (section) =>
       section.id.toLowerCase() === lower ||
       section.name.toLowerCase() === lower
   );
   if (fuzzy) return fuzzy;
 
-  const available = state.sections
+  const available = sections
     .map((s) => `${s.name} (${s.id})`)
     .join("; ");
   throw new Error(
     `No section matches "${sectionId}". Available sections: ${available || "none"}.`
   );
+}
+
+// Per-section gate for the flat creed_* mutation tools: read-only / hidden
+// sections throw; the edit routes to direct-edit only when the section's
+// permission is "direct", otherwise it becomes a proposal.
+function sectionUseDirectEdit(section: CreedSection): boolean {
+  if (section.agentPermission === "read-only" || section.agentPermission === "hidden") {
+    throw new Error(
+      `Section ${section.id} is read-only - the user hasn't granted agent edits to it. Don't edit or propose against it.`
+    );
+  }
+  return section.agentPermission === "direct";
 }
 
 type MutationKind = "update" | "delete" | "rename" | "recolor";
@@ -985,13 +1020,7 @@ async function runSectionMutation(
   },
   agentName: string | null
 ) {
-  if (!section.agentWritable) {
-    throw new Error(
-      `Section ${section.id} is not agent-writable. Ask the user to flip its agent-writable toggle to grant access.`
-    );
-  }
-
-  const useDirectEdit = !state.settings.requireApproval;
+  const useDirectEdit = sectionUseDirectEdit(section);
 
   if (useDirectEdit) {
     const body =
@@ -1155,13 +1184,7 @@ async function runAppend(
   payload: { contentMarkdown: string; reason?: string },
   agentName: string | null
 ) {
-  if (!section.agentWritable) {
-    throw new Error(
-      `Section ${section.id} is not agent-writable. Ask the user to flip its agent-writable toggle to grant access.`
-    );
-  }
-
-  if (!state.settings.requireApproval) {
+  if (sectionUseDirectEdit(section)) {
     await callInternalCreedRoute(request, "/api/creed/write", state.directEditToken, {
       operation: "append_to_section",
       sectionId: section.id,
@@ -1217,13 +1240,7 @@ async function runReorder(
   },
   agentName: string | null
 ) {
-  if (!section.agentWritable) {
-    throw new Error(
-      `Section ${section.id} is not agent-writable. Ask the user to flip its agent-writable toggle to grant access.`
-    );
-  }
-
-  if (!state.settings.requireApproval) {
+  if (sectionUseDirectEdit(section)) {
     await callInternalCreedRoute(request, "/api/creed/write", state.directEditToken, {
       operation: "reorder_section",
       sectionId: section.id,
@@ -1297,6 +1314,7 @@ function searchSections(state: CreedState, query: string, limit: number) {
   }> = [];
 
   for (const section of state.sections) {
+    if (section.agentPermission === "hidden") continue;
     const plainBody = stripHtmlForSearch(section.content ?? "");
     const haystack = `${section.name} ${plainBody}`.toLowerCase();
     const matched = terms.filter((term) => haystack.includes(term));
@@ -1418,7 +1436,9 @@ async function handleRpcRequest(
         {
           uri: CREED_RESOURCE_URI,
           mimeType: "text/markdown",
-          text: buildVisibleCreedMarkdown(state.sections).trim(),
+          text: buildVisibleCreedMarkdown(
+            state.sections.filter((section) => section.agentPermission !== "hidden")
+          ).trim(),
         },
       ],
     });

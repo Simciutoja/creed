@@ -6,9 +6,11 @@ import {
   buildAgentReadPayload,
   inferSectionTemplate,
   legacyPayloadToRichTextContent,
+  normalizeAgentPermission,
   normalizeLegacyAccent,
   normalizeLegacyProposalDraft,
   normalizeLegacySectionId,
+  permissionToWritable,
   type AgentIconKind,
   type ActivityStatus,
   type GitHubSyncStatus,
@@ -40,6 +42,7 @@ type SectionRow = {
   name: string;
   accent: AccentKey;
   payload: Record<string, unknown>;
+  agent_permission?: string | null;
   last_edited_by: string;
   last_edited_type: ActorType;
   last_edited_at: string;
@@ -661,7 +664,7 @@ function buildConnectionDefinitions() {
         icon: "claude",
         description: "Connect Creed so every Claude Code session starts with your context.",
         connectHint: "Run the command, then /mcp in Claude Code to authorize in the browser.",
-        command: `claude mcp add --transport http creed ${mcpUrl}`,
+        command: `claude mcp add -t http creed ${mcpUrl}`,
       },
       {
         id: "codex",
@@ -726,6 +729,7 @@ function serializeSectionPayload(section: CreedSection) {
     content: section.content,
     template: section.template,
     agentWritable: section.agentWritable,
+    agentPermission: section.agentPermission,
   };
 }
 
@@ -735,14 +739,11 @@ function hydrateSection(row: SectionRow): CreedSection {
     typeof row.payload.template === "string"
       ? (row.payload.template as SectionTemplate)
       : undefined;
-  // No UI lets a user set `agentWritable: false`. Every creation path
-  // (onboarding, in-app create, agent-create) stores `true`. The only
-  // historical source of `false` was the GitHub pull parser, which was a
-  // bug: it made connected agents (MCP / Codex / Claude) see zero
-  // editable sections after a pull. We heal it on read so existing rows
-  // don't require a re-pull. Revisit if a real user-facing lock toggle
-  // ever lands.
-  const payloadAgentWritable = true;
+  // Read the per-section permission from the dedicated column (the legacy
+  // payload `agentWritable` flag is ignored - the old GitHub-pull bug that set
+  // it false is moot now). Anything outside the enum heals to "propose", the
+  // safe writable default, so no section silently becomes read-only / hidden.
+  const agentPermission = normalizeAgentPermission(row.agent_permission);
   const content = legacyPayloadToRichTextContent(row.kind, row.payload);
 
   return {
@@ -752,7 +753,8 @@ function hydrateSection(row: SectionRow): CreedSection {
     name: row.section_id === "conventions" ? "Operating Principles" : row.name,
     accent: normalizeLegacyAccent(row.accent),
     content,
-    agentWritable: payloadAgentWritable,
+    agentWritable: permissionToWritable(agentPermission),
+    agentPermission,
     lastEditedBy: row.last_edited_by,
     lastEditedType: row.last_edited_type,
     lastEditedLabel: toRelativeTime(row.last_edited_at) ?? "just now",
@@ -1250,6 +1252,7 @@ export async function persistCreedState(client: unknown, userId: string, state: 
       name: section.name,
       accent: section.accent,
       payload,
+      agent_permission: section.agentPermission,
       last_edited_by: section.lastEditedBy,
       last_edited_type: section.lastEditedType,
       last_edited_at: changed ? now : current?.lastEditedAt ?? now,

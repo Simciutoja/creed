@@ -10,7 +10,7 @@ import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from 
 import { Check, ChevronDown } from "lucide-react";
 import { useCreed } from "@/components/creed/creed-provider";
 import { IntegrationGlyph } from "@/components/creed/brand";
-import { RoundedTopBar } from "@/components/creed/rounded-bar";
+import { StackTopBar } from "@/components/creed/rounded-bar";
 import {
   ChartContainer,
   ChartTooltip,
@@ -78,6 +78,10 @@ const OUTCOME_CONFIG: ChartConfig = {
   rejected: { label: "Rejected", color: "#DC2626" },
   pending: { label: "Pending", color: "#3B82F6" },
 };
+
+// Stack order (bottom to top) for the outcomes chart, so StackTopBar can round
+// whichever segment is actually on top.
+const OUTCOME_KEYS = ["accepted", "rejected", "pending"];
 
 // Clean display names: known agents get their product name, anything else has
 // its "-mcp-client" suffix stripped and is title-cased ("codex-mcp-client" →
@@ -322,7 +326,8 @@ export function McpHealthDashboard() {
               })),
             ]}
             selectedKey={agentFilter}
-            iconSide="right"
+            iconSide="left"
+            align="end"
             menuWidthClass="min-w-44"
             onSelect={(key) => {
               setAgentFilter(key);
@@ -399,13 +404,18 @@ export function McpHealthDashboard() {
                   <ChartTooltip
                     content={<ChartTooltipContent labelFormatter={(value) => formatDay(String(value))} />}
                   />
-                  {chart.series.map((series, index) => (
+                  {chart.series.map((series) => (
                     <Bar
                       key={series.key}
                       dataKey={series.key}
                       stackId="stack"
                       fill={series.color}
-                      shape={index === chart.series.length - 1 ? <RoundedTopBar /> : undefined}
+                      shape={
+                        <StackTopBar
+                          orderedKeys={chart.series.map((entry) => entry.key)}
+                          dataKey={series.key}
+                        />
+                      }
                     />
                   ))}
                 </BarChart>
@@ -432,9 +442,9 @@ export function McpHealthDashboard() {
                     <CartesianGrid vertical={false} strokeDasharray="3 3" />
                     <XAxis dataKey="date" hide />
                     <ChartTooltip content={<ChartTooltipContent labelFormatter={(value) => formatDay(String(value))} />} />
-                    <Bar dataKey="accepted" stackId="o" fill="var(--color-accepted)" />
-                    <Bar dataKey="rejected" stackId="o" fill="var(--color-rejected)" />
-                    <Bar dataKey="pending" stackId="o" fill="var(--color-pending)" shape={<RoundedTopBar />} />
+                    <Bar dataKey="accepted" stackId="o" fill="var(--color-accepted)" shape={<StackTopBar orderedKeys={OUTCOME_KEYS} dataKey="accepted" />} />
+                    <Bar dataKey="rejected" stackId="o" fill="var(--color-rejected)" shape={<StackTopBar orderedKeys={OUTCOME_KEYS} dataKey="rejected" />} />
+                    <Bar dataKey="pending" stackId="o" fill="var(--color-pending)" shape={<StackTopBar orderedKeys={OUTCOME_KEYS} dataKey="pending" />} />
                   </BarChart>
                 </ChartContainer>
               ) : (
@@ -507,7 +517,7 @@ export function McpHealthDashboard() {
                           className="h-2.5 w-2.5 shrink-0 rounded-[3px]"
                           style={{ backgroundColor: section.color }}
                         />
-                        <span className="truncate text-[var(--creed-text-secondary)]">
+                        <span className="hidden truncate text-[var(--creed-text-secondary)] sm:block">
                           {section.sectionName}
                         </span>
                         <span className="ml-auto shrink-0 font-mono text-[var(--creed-text-tertiary)]">
@@ -537,6 +547,7 @@ function Dropdown({
   selectedKey,
   onSelect,
   iconSide = "left",
+  align,
   variant = "outline",
   menuWidthClass = "min-w-40",
 }: {
@@ -546,6 +557,7 @@ function Dropdown({
   selectedKey: string;
   onSelect: (key: string) => void;
   iconSide?: "left" | "right";
+  align?: "start" | "end";
   variant?: "outline" | "ghost";
   menuWidthClass?: string;
 }) {
@@ -569,7 +581,7 @@ function Dropdown({
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        align={iconSide === "right" ? "end" : "start"}
+        align={align ?? (iconSide === "right" ? "end" : "start")}
         className={cn(
           "space-y-1 border-[var(--creed-border)] bg-[var(--creed-surface)] p-1.5",
           menuWidthClass
@@ -581,7 +593,7 @@ function Dropdown({
             onSelect={() => onSelect(item.key)}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-[13px]",
-              selectedKey === item.key && "bg-[var(--creed-background)] font-medium"
+              selectedKey === item.key && "bg-[var(--creed-surface-selected)] font-medium"
             )}
           >
             {item.icon && iconSide === "left" ? (

@@ -30,7 +30,7 @@ function ExpandRegion({ open, children }: { open: boolean; children: React.React
   );
 }
 
-function htmlToText(value: string) {
+export function htmlToText(value: string) {
   return value
     .replace(/<\s*(br|hr)\s*\/?\s*>/gi, "\n")
     .replace(/<\s*\/(p|h\d|li|ul|ol|blockquote|pre)\s*>/gi, "\n")

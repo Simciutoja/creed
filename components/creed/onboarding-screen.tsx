@@ -87,6 +87,7 @@ function makeStarterSection(
     // Pivot: every starter section is agent-writable so AI can keep the
     // profile accurate, polished, concise, and current.
     agentWritable: partial.agentWritable ?? true,
+    agentPermission: "propose",
     lastEditedBy: "You",
     lastEditedType: "user",
     lastEditedLabel: "just now",
@@ -1018,7 +1019,7 @@ function ModelSelect({
 
         return (
           <div className="flex min-w-0 items-center gap-3">
-            <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: quality.color }} />
+            <span className="h-2.5 w-2.5 shrink-0 rounded-[3px]" style={{ backgroundColor: quality.color }} />
             <div className="min-w-0 flex-1">
               <div className="truncate text-[14px] font-medium text-[var(--creed-text-primary)]">
                 {model.name}
