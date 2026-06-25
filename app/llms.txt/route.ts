@@ -15,6 +15,7 @@ export function GET() {
 ## About
 
 - [What is a personal context file?](${base}/context): The category explained - what goes in the file, how agents keep it current, and how it differs from a chatbot's memory.
+- [Examples](${base}/examples): Concrete moments where one shared file changes the answer, across everyday life, health, boundaries, building, writing, research, and ownership.
 - [Home](${base}/home): What Creed is and how it works.
 - [Pricing](${base}/pricing): Plans and access.
 - [Docs](${base}/docs): Setting up Creed, connecting agents, and keeping context useful over time.

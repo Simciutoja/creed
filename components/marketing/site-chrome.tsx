@@ -28,7 +28,7 @@ import {
 } from "@/lib/branding";
 
 const navItems = [
-  { label: "Privacy", href: "/privacy" },
+  { label: "Examples", href: "/examples" },
   { label: "Pricing", href: "/pricing" },
   { label: "Context", href: "/context" },
 ] as const;
@@ -591,7 +591,7 @@ export function MarketingFooter() {
         </div>
 
         <div className="grid gap-8 sm:grid-cols-3">
-          <FooterColumn title="Product" links={["Pricing"]} />
+          <FooterColumn title="Product" links={["Pricing", "Examples"]} />
           <FooterColumn title="Legal" links={["Privacy", "Terms", "Stack"]} />
           <FooterColumn
             title="Resources"
@@ -702,7 +702,9 @@ function FooterColumn({ title, links }: { title: string; links: string[] }) {
             href={
               link === "Pricing"
                 ? "/pricing"
-                : link === "Privacy"
+                : link === "Examples"
+                  ? "/examples"
+                  : link === "Privacy"
                   ? "/privacy"
                   : link === "Terms"
                     ? "/terms"

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AnimatedPageTitle, AnimatedSectionHeading } from "@/components/marketing/animated-page-title";
 import { IntegrationGlyph } from "@/components/creed/brand";
 import { MarketingFooter, MarketingHeroBanner } from "@/components/marketing/site-chrome";
+import { useOpenSections } from "@/components/marketing/use-open-sections";
 import { AnimatedIconButton } from "@/components/creed/animated-icon-action";
 import { AnimatedCheckmark } from "@/components/ui/animated-checkmark";
 import { CopyIcon } from "@/components/ui/copy";
@@ -814,9 +815,8 @@ function FileBlock({ label, children }: { label: string; children: string }) {
 export function DocsPageView() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState(navItems[0]?.id ?? "overview");
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(navGroups.map((group) => [group.group, true]))
-  );
+  // One group open at a time so the long docs nav stays compact.
+  const { isOpen, toggle } = useOpenSections(navGroups.map((group) => group.group), 1);
 
   const activeGroup = sectionGroupById.get(activeSection);
 
@@ -825,10 +825,6 @@ export function DocsPageView() {
   // every section the scroll passes on the way.
   const lockedRef = useRef(false);
   const unlockTimerRef = useRef<number | null>(null);
-
-  function toggleGroup(group: string) {
-    setOpenGroups((prev) => ({ ...prev, [group]: !(prev[group] ?? true) }));
-  }
 
   const sectionIds = useMemo(() => navItems.map((section) => section.id), []);
 
@@ -954,13 +950,13 @@ export function DocsPageView() {
               </div>
               <nav className="mt-5 space-y-1">
                 {navGroups.map((group) => {
-                  const open = openGroups[group.group] ?? true;
+                  const open = isOpen(group.group);
                   const isActiveGroup = group.group === activeGroup;
                   return (
                     <div key={group.group}>
                       <button
                         type="button"
-                        onClick={() => toggleGroup(group.group)}
+                        onClick={() => toggle(group.group)}
                         aria-expanded={open}
                         className={cn(
                           "flex w-full items-center justify-between gap-2 py-1.5 text-[15px] font-medium transition-opacity hover:opacity-70",

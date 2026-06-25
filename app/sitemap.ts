@@ -12,6 +12,7 @@ import { getSiteUrl } from "@/lib/supabase/env";
 const PUBLIC_PATHS = [
   { path: "/home", changeFrequency: "weekly" as const, priority: 1.0 },
   { path: "/context", changeFrequency: "monthly" as const, priority: 0.8 },
+  { path: "/examples", changeFrequency: "monthly" as const, priority: 0.8 },
   { path: "/pricing", changeFrequency: "monthly" as const, priority: 0.9 },
   { path: "/docs", changeFrequency: "monthly" as const, priority: 0.7 },
   { path: "/privacy", changeFrequency: "yearly" as const, priority: 0.3 },
