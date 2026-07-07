@@ -243,6 +243,7 @@ export function CompanySettings() {
     refreshState,
     restoreSection,
     setProfileAvatar,
+    setVersionControlConfig,
     exportMarkdown,
     exportActivityJson,
     exportAllDataJson,
@@ -732,21 +733,44 @@ export function CompanySettings() {
     repoName?: string;
     branch?: string;
   }) {
+    const previous = state.settings.versionControl;
+    const next = {
+      ...previous,
+      ...patch,
+      lastRemoteSha: undefined,
+      lastRemoteMessage: undefined,
+      lastRemoteCommittedAt: undefined,
+      lastSyncedContentHash: undefined,
+      syncStatus:
+        (patch.repoOwner ?? previous.repoOwner) &&
+        (patch.repoName ?? previous.repoName) &&
+        (patch.branch ?? previous.branch)
+          ? ("unknown" as const)
+          : ("not-configured" as const),
+    };
+
+    setVersionControlConfig(next);
     setVcSaving(true);
     const ok = await post("/api/app/company/version-control", {
       creedId,
       ...patch,
     });
-    if (ok) await refreshState();
+    if (ok) {
+      await refreshState();
+    } else {
+      setVersionControlConfig(previous);
+    }
     setVcSaving(false);
   }
 
   function handleRepoChange(fullName: string) {
+    const repo = repos.find((item) => item.fullName === fullName);
+    if (!repo) return;
     const [owner, ...rest] = fullName.split("/");
     void saveVersionControl({
       repoOwner: owner,
       repoName: rest.join("/"),
-      branch: "",
+      branch: repo.defaultBranch,
     });
   }
 

@@ -4,10 +4,9 @@ import type { SupabaseLikeClient } from "@/lib/supabase/types";
 
 // The company Creed's GitHub sync target + last-sync bookkeeping
 // (creed_company_version_control). Configured by an owner/admin; pushes run on
-// the acting manager's personal GitHub token, so only the TARGET is
-// company-level. Shaped to match the personal VersionControlRow columns so the
-// same getConfiguredRepo / resolveSyncStatus / buildVersionControlSettings
-// helpers work unchanged.
+// the team's GitHub token, so the connection and target are both company-level.
+// Shaped to match the personal VersionControlRow columns so the same
+// getConfiguredRepo / resolveSyncStatus helpers work unchanged.
 
 export type CompanyVersionControlRow = {
   repo_owner: string | null;

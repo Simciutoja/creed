@@ -6,10 +6,10 @@ import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { SupabaseLikeClient } from "@/lib/supabase/types";
 
 // The company Creed's GitHub sync target (repo/branch). Owner/admin only.
-// Pushes themselves run on the acting manager's personal GitHub connection via
-// the company-aware /api/app/github/push; this route only persists WHERE the
-// company file syncs to. Changing the repo or branch resets the sync
-// bookkeeping so status is re-derived against the new target.
+// Pushes run on the team's GitHub connection via /api/app/github/push; this
+// route only persists where the company file syncs to. Changing the repo or
+// branch resets the sync bookkeeping so status is re-derived against the new
+// target.
 
 function admin(): SupabaseLikeClient {
   return getSupabaseAdminClient() as unknown as SupabaseLikeClient;
