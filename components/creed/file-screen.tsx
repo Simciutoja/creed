@@ -3343,19 +3343,21 @@ function SectionCard({
           </div>
         </div>
 
-        <AnimatePresence initial={false}>
-          {collapsed ? null : (
-            <motion.div
-              key={`${section.id}-body`}
-              initial={{ height: 0, opacity: 0, y: -4 }}
-              animate={{ height: "auto", opacity: 1, y: 0 }}
-              exit={{ height: 0, opacity: 0, y: -4 }}
-              transition={{
-                height: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
-                opacity: { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
-                y: { duration: 0.24, ease: [0.22, 1, 0.36, 1] },
-              }}
-              className="overflow-hidden"
+        <div
+          className={cn(
+            "grid transition-[grid-template-rows] duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+            collapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]",
+          )}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div
+              className={cn(
+                "transition-[opacity,transform] ease-[cubic-bezier(0.22,1,0.36,1)]",
+                collapsed
+                  ? "pointer-events-none -translate-y-1 opacity-0 duration-150"
+                  : "translate-y-0 opacity-100 duration-200",
+              )}
+              aria-hidden={collapsed}
             >
               {proposals.length > 0 ? (
                 <div className="mb-4 space-y-3">
@@ -3431,9 +3433,9 @@ function SectionCard({
                   onAddSectionAfter={onAddSectionAfter}
                 />
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
+        </div>
       </section>
     </Reorder.Item>
   );
