@@ -770,17 +770,22 @@ export function MarketingFooter() {
   return (
     <footer className="border-t border-[var(--creed-border)] px-6 pt-12 md:px-10 md:pt-16 lg:px-12">
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.1fr_0.9fr]">
-        <div>
-          <Link
-            href="/home"
-            aria-label="Creed home"
-            className="inline-block transition-opacity hover:opacity-80"
-          >
-            <CreedWordmark />
-          </Link>
-          <p className="t-body-lg mt-4 max-w-sm text-[var(--creed-text-secondary)]">
-            Personal context for your agents.
-          </p>
+        <div className="flex h-full flex-col justify-between gap-10">
+          <div>
+            <Link
+              href="/home"
+              aria-label="Creed home"
+              className="inline-block transition-opacity hover:opacity-80"
+            >
+              <CreedWordmark />
+            </Link>
+            <p className="t-body-lg mt-4 max-w-sm text-[var(--creed-text-secondary)]">
+              Personal context for your agents.
+            </p>
+          </div>
+          <div>
+            <SystemStatusPill href="https://status.creed.md" />
+          </div>
         </div>
 
         <div className="grid gap-8 sm:grid-cols-3">
@@ -790,11 +795,7 @@ export function MarketingFooter() {
         </div>
       </div>
 
-      <div className="mx-auto mt-12 max-w-7xl">
-        <SystemStatusPill href="https://status.creed.md" />
-      </div>
-
-      <div className="mx-auto mt-6 flex max-w-7xl flex-col gap-4 border-t border-[var(--creed-border)] py-6 md:flex-row md:items-center md:justify-between">
+      <div className="mx-auto mt-8 flex max-w-7xl flex-col gap-4 border-t border-[var(--creed-border)] py-6 md:flex-row md:items-center md:justify-between">
         <div className="t-meta flex flex-wrap items-center gap-x-2 gap-y-1 text-[var(--creed-text-tertiary)]">
           <span>© 2026 Creed</span>
           <span aria-hidden="true">·</span>
