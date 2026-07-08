@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import type { StaticImageData } from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { FaqAccordion } from "@/components/marketing/faq-accordion";
 import {
   DirectEditDemo,
@@ -12,7 +13,7 @@ import {
 import {
   ConnectDemo,
   CreateDemo,
-  ReviewDemo,
+  UsageDemo,
 } from "@/components/marketing/how-it-works-demos";
 import {
   ReadDemo,
@@ -26,6 +27,7 @@ import { usePaidStatus } from "@/components/marketing/use-paid-status";
 import { useOnboardingResume } from "@/components/marketing/use-onboarding-resume";
 import { useAnimatedIconControls } from "@/components/creed/animated-icon-controls";
 import { ArrowRightIcon } from "@/components/ui/arrow-right";
+import { CommandIcon } from "@/components/ui/command";
 import { useRoadmap } from "@/components/marketing/use-roadmap";
 import { ROADMAP_STATUS_STYLE } from "@/components/marketing/roadmap-status";
 import type { RoadmapColumn, RoadmapTask } from "@/lib/marketing/roadmap";
@@ -149,6 +151,7 @@ export function BelowHeroSections({ configured }: { configured: boolean }) {
       <WhyUseItSection />
       <HowCreedWorksSection />
       <GovernedCollaborationSection />
+      <AiFeaturesSection />
       <HowItWorksSection />
       <IntegrationsSection />
       <WhatsOnTheWaySection />
@@ -322,20 +325,20 @@ function PlateCard({
   return (
     <article
       className={cn(
-        "flex flex-col rounded-2xl bg-[var(--creed-surface)] p-3 md:p-4",
+        "flex min-w-0 flex-col rounded-2xl bg-[var(--creed-surface)] p-3 md:p-4",
         !square && "h-full",
       )}
     >
       <div
         className={cn(
-          "relative flex items-center justify-center overflow-hidden rounded-xl p-4 sm:p-6",
+          "relative flex min-w-0 items-center justify-center overflow-hidden rounded-xl p-4 sm:p-6",
           // Square plate at the 3-up desktop width; auto height (content) when
           // the grid collapses to one column so a full-width square isn't huge.
           square ? "lg:aspect-square" : "min-h-[380px] flex-1",
         )}
         style={{ backgroundColor: plateColor }}
       >
-        <div className="relative w-full">{children}</div>
+        <div className="relative min-w-0 w-full">{children}</div>
       </div>
       <div className="mt-4 px-1 md:mt-5">
         <h3 className="t-step text-[var(--creed-text-primary)]">
@@ -481,6 +484,204 @@ function GovernedCollaborationSection() {
   );
 }
 
+const PANEL_DEMO_STEPS = [
+  {
+    mode: "Search",
+    prompt: "billing",
+    status: "Open billing settings",
+    action: "Take me there",
+  },
+  {
+    mode: "Ask",
+    prompt: "what changed in Goals?",
+    status: "Goals has 2 proposals and one accepted edit this week.",
+    action: "Summarized",
+  },
+  {
+    mode: "Agent",
+    prompt: "tighten my Work section",
+    status: "Drafting a reversible proposal",
+    action: "Review diff",
+  },
+] as const;
+
+function useCyclingIndex(length: number, intervalMs = 1900) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(
+      () => setIndex((current) => (current + 1) % length),
+      intervalMs,
+    );
+    return () => window.clearInterval(intervalId);
+  }, [intervalMs, length]);
+
+  return index;
+}
+
+function useTypedPanelPrompt(text: string, resetKey: number) {
+  const [typed, setTyped] = useState("");
+
+  useEffect(() => {
+    setTyped("");
+    let index = 0;
+    const intervalId = window.setInterval(() => {
+      index += 1;
+      setTyped(text.slice(0, index));
+      if (index >= text.length) {
+        window.clearInterval(intervalId);
+      }
+    }, 34);
+    return () => window.clearInterval(intervalId);
+  }, [resetKey, text]);
+
+  return typed;
+}
+
+function PanelFeatureDemo() {
+  const stepIndex = useCyclingIndex(PANEL_DEMO_STEPS.length);
+  const step = PANEL_DEMO_STEPS[stepIndex];
+  const typedPrompt = useTypedPanelPrompt(step.prompt, stepIndex);
+
+  return (
+    <div className="mx-auto w-full max-w-[390px] overflow-hidden rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_10px_30px_rgba(28,28,26,0.10)]">
+      <div className="flex items-center gap-2 border-b border-[var(--creed-border)] px-3.5 py-3">
+        <span className="flex h-6 w-6 items-center justify-center rounded-[8px] bg-[#FCE7F3] text-[#DB2777] dark:bg-[#3F1230] dark:text-[#F472B6]">
+          <CommandIcon size={14} />
+        </span>
+        <div className="min-w-0 flex-1 text-[13px] font-medium text-[var(--creed-text-primary)]">
+          Panel
+        </div>
+        <div className="flex rounded-[8px] bg-[var(--creed-surface-raised)] p-0.5">
+          {PANEL_DEMO_STEPS.map((item, index) => (
+            <span
+              key={item.mode}
+              className={cn(
+                "rounded-[6px] px-2 py-1 text-[10px] font-medium transition-colors duration-200",
+                index === stepIndex
+                  ? "bg-[var(--creed-surface)] text-[var(--creed-text-primary)] shadow-sm"
+                  : "text-[var(--creed-text-tertiary)]",
+              )}
+            >
+              {item.mode}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="p-3.5">
+        <div className="rounded-[12px] border border-[var(--creed-border)] bg-[var(--creed-surface)] px-3 py-2.5 text-[13px] text-[var(--creed-text-primary)]">
+          {typedPrompt || (
+            <span className="text-[var(--creed-text-tertiary)]">
+              {step.prompt}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-3 space-y-2">
+          <div className="flex items-center gap-2 rounded-[12px] bg-[var(--creed-surface-raised)] px-3 py-2.5">
+            <span className="h-1.5 w-1.5 shrink-0 rounded-[3px] bg-[#DB2777]" />
+            <span className="min-w-0 flex-1 truncate text-[13px] text-[var(--creed-text-primary)]">
+              {step.status}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 px-1 text-[12px] text-[var(--creed-text-tertiary)]">
+            <span className="rounded-[5px] bg-[var(--creed-surface-raised)] px-1.5 py-0.5 font-medium text-[var(--creed-text-secondary)]">
+              ↵
+            </span>
+            <span>{step.action}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ComingSoonDemo() {
+  const particles = [
+    { x: -52, y: -42, delay: 0 },
+    { x: 46, y: -50, delay: 0.28 },
+    { x: -62, y: 18, delay: 0.56 },
+    { x: 58, y: 14, delay: 0.84 },
+    { x: -28, y: 58, delay: 1.12 },
+    { x: 30, y: 54, delay: 1.4 },
+  ] as const;
+
+  return (
+    <div className="flex min-h-[260px] w-full items-center justify-center">
+      <div className="relative flex h-36 w-36 items-center justify-center text-white/88 dark:text-[#052e16]/78">
+        {particles.map((particle, index) => (
+          <motion.span
+            key={`${particle.x}-${particle.y}`}
+            aria-hidden="true"
+            className="absolute text-[18px] font-medium leading-none text-white/72 drop-shadow-[0_3px_12px_rgba(255,255,255,0.35)] dark:text-[#052e16]/72 dark:drop-shadow-[0_3px_12px_rgba(5,46,22,0.22)]"
+            initial={false}
+            animate={{
+              x: [0, particle.x],
+              y: [0, particle.y],
+              opacity: [0, 0.85, 0],
+              scale: [0.55, 1, 0.8],
+              rotate: index % 2 === 0 ? [0, -12] : [0, 12],
+            }}
+            transition={{
+              duration: 2.1,
+              delay: particle.delay,
+              repeat: Infinity,
+              repeatDelay: 0.35,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            ?
+          </motion.span>
+        ))}
+        <span className="absolute h-28 w-28 animate-pulse rounded-full bg-white/8 blur-xl dark:bg-[#052e16]/10" />
+        <span className="relative text-[88px] font-medium leading-none tracking-[-0.08em]">
+          ?
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function AiFeaturesSection() {
+  return (
+    <section className="px-6 py-24 md:px-10 md:py-30 lg:px-12">
+      <SectionHeading
+        headline="AI inside the file"
+        subline="Three focused surfaces, each built for a different kind of help."
+        className="max-w-[64rem]"
+      />
+
+      <div className="mx-auto mt-14 grid max-w-6xl items-stretch gap-5 lg:grid-cols-3">
+        <PlateCard
+          plateColor="#2563EB"
+          title="Analysis"
+          body="Score every section for signal, weak spots, and what to sharpen next."
+          square
+        >
+          <ScoreDemo />
+        </PlateCard>
+        <PlateCard
+          plateColor="#EC4899"
+          title="Panel"
+          body="Search, ask, and let Creed draft reversible edits without leaving the file."
+          square
+        >
+          <PanelFeatureDemo />
+        </PlateCard>
+        <PlateCard
+          plateColor="#22C55E"
+          title="Tab"
+          body="Tab is in development and will be coming soon."
+          square
+        >
+          <ComingSoonDemo />
+        </PlateCard>
+      </div>
+    </section>
+  );
+}
+
 function HowItWorksSection() {
   return (
     <section className="px-6 py-24 md:px-10 md:py-30 lg:px-12">
@@ -492,9 +693,9 @@ function HowItWorksSection() {
 
       <div className="mx-auto mt-14 grid max-w-6xl items-start gap-5 lg:grid-cols-3">
         <PlateCard
-          plateColor="var(--plate-create)"
+          plateColor="#FBBF24"
           number="1"
-          numberColor="#ec4899"
+          numberColor="#FBBF24"
           title="Describe yourself"
           body="Answer a few quick questions and Creed drafts your starter profile."
           square
@@ -502,9 +703,9 @@ function HowItWorksSection() {
           <CreateDemo />
         </PlateCard>
         <PlateCard
-          plateColor="var(--plate-connect)"
+          plateColor="#F97316"
           number="2"
-          numberColor="#22c55e"
+          numberColor="#F97316"
           title="Extract your context"
           body="Pull the context you've already built across your tools into one profile."
           square
@@ -512,47 +713,115 @@ function HowItWorksSection() {
           <ConnectDemo />
         </PlateCard>
         <PlateCard
-          plateColor="var(--plate-improve)"
+          plateColor="#EF4444"
           number="3"
-          numberColor="#2563eb"
-          title="Review and improve"
-          body="See what your starter Creed scores, then keep sharpening it over time."
+          numberColor="#EF4444"
+          title="Monitor usage"
+          body="See where your AI allowance goes across Analysis, Tab, and Panel."
           square
         >
-          <ReviewDemo />
+          <UsageDemo />
         </PlateCard>
       </div>
     </section>
   );
 }
 
-// Each tile's name is coloured to match its icon's dominant brand colour.
-// Mono icons (ChatGPT, Grok, Cursor, OpenCode, Devin, v0, Custom, GitHub,
-// Notion) fall through to the primary text colour so the name reads as the
-// same monochrome as the glyph. Hermes' yellow is darkened in light mode so
-// it stays legible on the white card.
-const STACK_NAME_ACCENT: Partial<Record<BrandLogoKey, string>> = {
-  claude: "text-[#FF6200]",
-  claudecode: "text-[#FF6200]",
-  codex: "text-[#0066FF]",
-  openclaw: "text-[#FF0000]",
-  hermes: "text-[#B58900] dark:text-[#FFBB00]",
-  replit: "text-[#F26207]",
-  whirl: "text-[#0066FF]",
-  obsidian: "text-[#7C3AED]",
+// Roadmap-style colour pairs for compact stack tiles: soft tinted cap,
+// saturated label. Monochrome brands share a neutral pair.
+const STACK_TILE_STYLE: Record<BrandLogoKey, { fill: string; text: string }> = {
+  chatgpt: {
+    fill: "bg-[#F3F4F6] dark:bg-[#1f1f1d]",
+    text: "text-[#1F1F1A] dark:text-[#e7e7e2]",
+  },
+  claude: {
+    fill: "bg-[#FFF1E7] dark:bg-[#3a1f12]/55",
+    text: "text-[#C2410C] dark:text-[#FB923C]",
+  },
+  claudecode: {
+    fill: "bg-[#FFF1E7] dark:bg-[#3a1f12]/55",
+    text: "text-[#C2410C] dark:text-[#FB923C]",
+  },
+  codex: {
+    fill: "bg-[#EFF6FF] dark:bg-[#102341]/60",
+    text: "text-[#1D4ED8] dark:text-[#60A5FA]",
+  },
+  cursor: {
+    fill: "bg-[#F3F4F6] dark:bg-[#1f1f1d]",
+    text: "text-[#1F1F1A] dark:text-[#e7e7e2]",
+  },
+  custom: {
+    fill: "bg-[#F3F4F6] dark:bg-[#252932]/70",
+    text: "text-[#4B5563] dark:text-[#D1D5DB]",
+  },
+  devin: {
+    fill: "bg-[#F3F4F6] dark:bg-[#1f1f1d]",
+    text: "text-[#1F1F1A] dark:text-[#e7e7e2]",
+  },
+  github: {
+    fill: "bg-[#F3F4F6] dark:bg-[#1f1f1d]",
+    text: "text-[#1F1F1A] dark:text-[#e7e7e2]",
+  },
+  grok: {
+    fill: "bg-[#F3F4F6] dark:bg-[#1f1f1d]",
+    text: "text-[#1F1F1A] dark:text-[#e7e7e2]",
+  },
+  hermes: {
+    fill: "bg-[#FFFBEB] dark:bg-[#3a2a12]/50",
+    text: "text-[#B45309] dark:text-[#FBBF24]",
+  },
+  notion: {
+    fill: "bg-[#F3F4F6] dark:bg-[#1f1f1d]",
+    text: "text-[#1F1F1A] dark:text-[#e7e7e2]",
+  },
+  obsidian: {
+    fill: "bg-[#F5F3FF] dark:bg-[#2d1b45]/55",
+    text: "text-[#6D28D9] dark:text-[#A78BFA]",
+  },
+  openclaw: {
+    fill: "bg-[#FEF2F2] dark:bg-[#3F1212]/50",
+    text: "text-[#DC2626] dark:text-[#F87171]",
+  },
+  opencode: {
+    fill: "bg-[#F3F4F6] dark:bg-[#1f1f1d]",
+    text: "text-[#1F1F1A] dark:text-[#e7e7e2]",
+  },
+  replit: {
+    fill: "bg-[#FFF1E7] dark:bg-[#3a1f12]/55",
+    text: "text-[#C2410C] dark:text-[#FB923C]",
+  },
+  whirl: {
+    fill: "bg-[#EFF6FF] dark:bg-[#102341]/60",
+    text: "text-[#1D4ED8] dark:text-[#60A5FA]",
+  },
+  v0: {
+    fill: "bg-[#F3F4F6] dark:bg-[#1f1f1d]",
+    text: "text-[#1F1F1A] dark:text-[#e7e7e2]",
+  },
 };
 
 function StackTile({ brand, label }: { brand: BrandLogoKey; label: string }) {
+  const style = STACK_TILE_STYLE[brand];
+
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-2.5 rounded-2xl bg-[var(--creed-surface)] px-2 py-4">
-      <BrandImage brand={brand} label={label} className="h-10 w-10" />
+    <div className="flex w-full min-w-0 flex-col overflow-hidden rounded-2xl bg-[var(--creed-surface)]">
       <div
         className={cn(
-          "text-center text-[12px] font-medium leading-tight tracking-[-0.01em]",
-          STACK_NAME_ACCENT[brand] ?? "text-[var(--creed-text-primary)]",
+          "flex min-h-10 items-center justify-center px-2 py-2.5",
+          style.fill,
         )}
       >
-        {label}
+        <div
+          className={cn(
+            "text-center text-[12px] font-medium leading-tight tracking-[-0.01em]",
+            style.text,
+          )}
+        >
+          {label}
+        </div>
+      </div>
+      <div className="flex min-h-16 items-center justify-center px-2 py-4">
+        <BrandImage brand={brand} label={label} className="h-10 w-10" />
       </div>
     </div>
   );

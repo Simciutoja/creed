@@ -16,8 +16,8 @@ export const AI_FEATURES: readonly AiFeature[] = ["analysis", "tab", "panel"];
 // Display metadata for the spend chart and the credit history. One colour per
 // feature; the chart stacks by feature, not by model.
 export const AI_FEATURE_META: Record<AiFeature, { label: string; color: string }> = {
-  analysis: { label: "Analysis", color: "#16A34A" },
-  tab: { label: "Tab", color: "#2563EB" },
+  analysis: { label: "Analysis", color: "#2563EB" },
+  tab: { label: "Tab", color: "#16A34A" },
   panel: { label: "Panel", color: "#DB2777" },
 };
 

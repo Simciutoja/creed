@@ -1,25 +1,21 @@
 "use client";
 
-// Three interactive mini-demos for the "How Creed works" steps, reflecting the
+// Three auto-playing mini-demos for the "How Creed works" steps, reflecting the
 // current app:
-//  - CreateDemo: a mini onboarding interview. Type an answer and continue
-//    through a few questions, then a starter Creed is ready.
+//  - CreateDemo: a mini onboarding interview that types through the starter
+//    questions, then lands on a ready state.
 //  - ConnectDemo: a single "All agents" card mashing up the onboarding
-//    copy-prompt button and the Connections all-agents glyph, both recoloured
-//    by the cycling brand palette (creed-copy-cycle).
-//  - ReviewDemo: the Identity quality card with a score and three expandable
-//    note rows (+ green, / amber, - red).
+//    copy-prompt button and the Connections all-agents glyph, with the button
+//    repeatedly flashing copied.
+//  - UsageDemo: a small stacked usage chart for the three AI features.
 // Client-only mock state, mobile-first (everything stacks vertically), no backend.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Check, ChevronDown, RotateCcw } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { AnimatedIconButton } from "@/components/creed/animated-icon-action";
 import { AnimatedCheckmark } from "@/components/ui/animated-checkmark";
 import { CopyIcon } from "@/components/ui/copy";
-import { QualityRing, qualityScoreColor } from "@/components/creed/file-quality-ui";
-import { accentColorMap } from "@/lib/creed-data";
-import { cn } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -30,22 +26,47 @@ const INTERVIEW = [
   { label: "What are you working toward?", placeholder: "Ship the v2 beta by August" },
   { label: "How should AI reply to you?", placeholder: "Lead with the answer, keep it tight" },
 ] as const;
-const CREATE_ACCENT = "#2563EB";
+const CREATE_ACCENT = "#FBBF24";
+
+function useTypedLoop(text: string, active: boolean, speedMs = 32) {
+  const [typed, setTyped] = useState("");
+
+  useEffect(() => {
+    if (!active) {
+      setTyped("");
+      return;
+    }
+
+    setTyped("");
+    let index = 0;
+    const intervalId = window.setInterval(() => {
+      index += 1;
+      setTyped(text.slice(0, index));
+      if (index >= text.length) {
+        window.clearInterval(intervalId);
+      }
+    }, speedMs);
+
+    return () => window.clearInterval(intervalId);
+  }, [active, speedMs, text]);
+
+  return typed;
+}
 
 export function CreateDemo() {
   const [step, setStep] = useState(0);
-  const [value, setValue] = useState("");
   const total = INTERVIEW.length;
   const done = step >= total;
-  const last = step === total - 1;
-  const advance = () => {
-    setValue("");
-    setStep((s) => s + 1);
-  };
-  const reset = () => {
-    setStep(0);
-    setValue("");
-  };
+  const current = INTERVIEW[Math.min(step, total - 1)];
+  const typed = useTypedLoop(current.placeholder, !done);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(
+      () => setStep((currentStep) => (currentStep >= total ? 0 : currentStep + 1)),
+      done ? 1500 : 2300,
+    );
+    return () => window.clearTimeout(timeoutId);
+  }, [done, step, total]);
 
   return (
     <div className="w-full">
@@ -72,27 +93,22 @@ export function CreateDemo() {
               <div className="mt-4 text-[12px] font-medium text-[var(--creed-text-tertiary)]">
                 Question {step + 1} of {total}
               </div>
-              <div className="mt-1 text-[16px] font-medium leading-snug text-[var(--creed-text-primary)]">{INTERVIEW[step].label}</div>
-              <input
-                value={value}
-                onChange={(event) => setValue(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    advance();
-                  }
-                }}
-                placeholder={INTERVIEW[step].placeholder}
-                className="mt-3 h-11 w-full rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] px-3.5 text-[14px] text-[var(--creed-text-primary)] outline-none transition-colors placeholder:text-[var(--creed-text-tertiary)] focus:border-[var(--creed-border-strong)]"
-              />
-              <button
-                type="button"
-                onClick={advance}
-                className="mt-3 inline-flex h-9 items-center gap-1.5 rounded-md bg-[var(--creed-text-primary)] px-4 text-[13px] font-medium text-[var(--creed-button-primary-fg)] transition-colors hover:bg-[var(--creed-button-primary-hover)]"
-              >
-                {last ? "Create my Creed" : "Continue"}
+              <div className="mt-1 text-[16px] font-medium leading-snug text-[var(--creed-text-primary)]">
+                {current.label}
+              </div>
+              <div className="mt-3 flex h-11 items-center rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] px-3.5 text-[14px] text-[var(--creed-text-primary)]">
+                <span className="truncate">
+                  {typed || (
+                    <span className="text-[var(--creed-text-tertiary)]">
+                      {current.placeholder}
+                    </span>
+                  )}
+                </span>
+              </div>
+              <div className="mt-3 inline-flex h-9 items-center gap-1.5 rounded-md bg-[var(--creed-text-primary)] px-4 text-[13px] font-medium text-[var(--creed-button-primary-fg)]">
+                {step === total - 1 ? "Create my Creed" : "Continue"}
                 <ArrowRight className="h-3.5 w-3.5" />
-              </button>
+              </div>
             </motion.div>
           ) : (
             <motion.div
@@ -106,14 +122,6 @@ export function CreateDemo() {
                 <Check className="h-4 w-4" />
               </span>
               <div className="text-[14px] font-medium text-[var(--creed-text-primary)]">Your starter Creed is ready</div>
-              <button
-                type="button"
-                onClick={reset}
-                className="inline-flex h-7 items-center gap-1.5 rounded-md border border-[var(--creed-border)] bg-[var(--creed-surface)] px-2.5 text-[12px] font-medium text-[var(--creed-text-secondary)] transition-colors hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]"
-              >
-                <RotateCcw className="h-3 w-3" />
-                Replay
-              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -135,19 +143,16 @@ const ALL_AGENTS_MASK = {
   maskSize: "contain",
 } as const;
 
-const CONNECT_PROMPT = "Connect to my Creed at https://creed.md/mcp and read it before you reply.";
-
 export function ConnectDemo() {
   const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(CONNECT_PROMPT);
-    } catch {
-      // clipboard may be unavailable in some preview contexts; still flash.
-    }
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1600);
-  };
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1150);
+    }, 2600);
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   return (
     <div className="w-full">
@@ -170,7 +175,7 @@ export function ConnectDemo() {
             icon={CopyIcon}
             showIcon={!copied}
             className="creed-copy-cycle min-w-[116px] justify-center rounded-md px-4 text-white"
-            onClick={() => void copy()}
+            tabIndex={-1}
           >
             {copied ? (
               <>
@@ -187,90 +192,109 @@ export function ConnectDemo() {
   );
 }
 
-// ----- step 3: review (quality) --------------------------------------------
+// ----- step 3: usage --------------------------------------------------------
 
-type Tone = "green" | "amber" | "red";
-const TAG_TONE: Record<Tone, string> = {
-  green: "bg-[#ECFDF5] text-[#047857] dark:bg-[#052e1a]/55 dark:text-[#4ade80]",
-  amber: "bg-[#FFFBEB] text-[#92400E] dark:bg-[#451a03]/55 dark:text-[#fbbf24]",
-  red: "bg-[#FEF2F2] text-[#B91C1C] dark:bg-[#3F1212]/55 dark:text-[#fca5a5]",
-};
+const USAGE_DAYS = [
+  { analysis: 34, tab: 0, panel: 8 },
+  { analysis: 22, tab: 10, panel: 6 },
+  { analysis: 45, tab: 18, panel: 14 },
+  { analysis: 18, tab: 22, panel: 4 },
+  { analysis: 30, tab: 14, panel: 18 },
+  { analysis: 52, tab: 20, panel: 12 },
+  { analysis: 26, tab: 28, panel: 10 },
+] as const;
 
-function TagPill({ label, tone }: { label: string; tone: Tone }) {
-  return (
-    <span className={cn("inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] font-medium leading-[1.2]", TAG_TONE[tone])}>
-      {label}
-    </span>
-  );
-}
+const USAGE_COLORS = {
+  analysis: "#2563EB",
+  tab: "#16A34A",
+  panel: "#DB2777",
+} as const;
 
-function NoteRow({ tone, note }: { tone: "good" | "mid" | "bad"; note: { title: string; detail: string } }) {
-  const [open, setOpen] = useState(false);
-  const color = tone === "good" ? "var(--creed-success)" : tone === "mid" ? "var(--creed-score-mid)" : "var(--creed-danger)";
-  const symbol = tone === "good" ? "+" : tone === "mid" ? "/" : "−";
-  return (
-    <div className="overflow-hidden rounded-md transition-colors hover:bg-[var(--creed-surface-raised)]">
-      <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} className="flex w-full items-center gap-1.5 px-1.5 py-1 text-left">
-        <span className="shrink-0 font-mono text-[12px] font-medium leading-[1.2]" style={{ color }}>
-          {symbol}
-        </span>
-        <span className="min-w-0 flex-1 truncate text-[12px] font-medium text-[var(--creed-text-primary)]">{note.title}</span>
-        <ChevronDown
-          className={cn(
-            "h-3 w-3 shrink-0 transition-all duration-150",
-            open ? "rotate-180 text-[var(--creed-text-primary)]" : "rotate-0 text-[var(--creed-text-tertiary)]"
-          )}
-        />
-      </button>
-      <AnimatePresence initial={false}>
-        {open ? (
-          <motion.div
-            key="detail"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: EASE }}
-            className="overflow-hidden"
-          >
-            <div className="px-1.5 pb-1.5 pl-[18px] text-[12px] leading-[1.5] text-[var(--creed-text-secondary)]">{note.detail}</div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-    </div>
-  );
-}
+export function UsageDemo() {
+  const [active, setActive] = useState(0);
 
-export function ReviewDemo() {
-  const accent = accentColorMap.identity;
-  const score = 75;
+  useEffect(() => {
+    const intervalId = window.setInterval(
+      () => setActive((index) => (index + 1) % USAGE_DAYS.length),
+      900,
+    );
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   return (
     <div className="w-full">
       <div className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 shadow-[0_8px_24px_rgba(28,28,26,0.06)]">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="h-7 w-[3px] shrink-0 rounded-full" style={{ backgroundColor: accent }} />
-            <span className="text-[15px] font-medium" style={{ color: accent }}>
-              Identity
-            </span>
-            <QualityRing score={score} color={accent} size={18} />
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="text-[13px] font-medium text-[var(--creed-text-secondary)]">
+              Credits spend
+            </div>
+            <div className="mt-1 text-[26px] font-medium tracking-[-0.04em] text-[var(--creed-text-primary)]">
+              $3.24
+            </div>
           </div>
-          <span className="flex items-baseline gap-1.5">
-            <span className="font-mono text-[20px] font-medium leading-none tabular-nums" style={{ color: qualityScoreColor(score) }}>
-              {score}
-            </span>
-            <span className="text-[12px] font-medium text-[var(--creed-text-primary)]">/ 100</span>
+          <span className="rounded-md border border-[var(--creed-border)] px-2 py-1 text-[12px] text-[var(--creed-text-secondary)]">
+            30d
           </span>
         </div>
-        <div className="mt-3 flex flex-wrap gap-1">
-          <TagPill label="Concrete" tone="green" />
-          <TagPill label="Generic" tone="amber" />
-          <TagPill label="Vague" tone="red" />
+
+        <div className="mt-5 flex h-[116px] items-end gap-2 border-b border-dashed border-[var(--creed-border)] pb-1">
+          {USAGE_DAYS.map((day, index) => {
+            const total = day.analysis + day.tab + day.panel;
+            const height = 34 + total * 0.72;
+            const selected = index === active;
+            return (
+              <div
+                key={index}
+                className="flex min-w-0 flex-1 flex-col justify-end"
+                style={{ height }}
+              >
+                <motion.div
+                  animate={{ opacity: selected ? 1 : 0.62, scaleY: selected ? 1 : 0.94 }}
+                  transition={{ duration: 0.28, ease: EASE }}
+                  className="flex w-full origin-bottom flex-col justify-end overflow-hidden rounded-t-[8px]"
+                >
+                  <div
+                    className="w-full"
+                    style={{
+                      height: `${(day.panel / total) * height}px`,
+                      backgroundColor: USAGE_COLORS.panel,
+                    }}
+                  />
+                  <div
+                    className="w-full"
+                    style={{
+                      height: `${(day.tab / total) * height}px`,
+                      backgroundColor: USAGE_COLORS.tab,
+                    }}
+                  />
+                  <div
+                    className="w-full"
+                    style={{
+                      height: `${(day.analysis / total) * height}px`,
+                      backgroundColor: USAGE_COLORS.analysis,
+                    }}
+                  />
+                </motion.div>
+              </div>
+            );
+          })}
         </div>
-        <div className="mt-3 space-y-1 border-t border-[var(--creed-border)] pt-2">
-          <NoteRow tone="good" note={{ title: "Location and role are clear", detail: "Names where you study and that you work solo with AI." }} />
-          <NoteRow tone="mid" note={{ title: "A few lines stay generic", detail: "Some phrasing could apply to anyone; tighten it to you." }} />
-          <NoteRow tone="bad" note={{ title: "Contains a stray line", detail: "A leftover scratch note near the end reads like garbage." }} />
+
+        <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-medium text-[var(--creed-text-secondary)]">
+          {[
+            ["Analysis", USAGE_COLORS.analysis],
+            ["Tab", USAGE_COLORS.tab],
+            ["Panel", USAGE_COLORS.panel],
+          ].map(([label, color]) => (
+            <span key={label} className="inline-flex items-center gap-1.5">
+              <span
+                className="h-2 w-2 rounded-[3px]"
+                style={{ backgroundColor: color }}
+              />
+              {label}
+            </span>
+          ))}
         </div>
       </div>
     </div>
