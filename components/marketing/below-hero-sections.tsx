@@ -596,53 +596,59 @@ function PanelFeatureDemo() {
   );
 }
 
-// The Tab demo loop: a section line types out, the Tab keycap appears, ghost
-// text streams in, Tab flashes, and the ghost solidifies into the line. Built
-// to mirror the real in-editor ghost (tinted suggestion + Tab / Esc hint).
+// The Tab demo loop, mirroring the real in-editor flow: a line types out, Tab
+// is pressed (the keycap depresses), the in-app ring spinner runs while the
+// suggestion is in flight, the whole ghost appears at once, and a second Tab
+// press solidifies it. No caret, no word-by-word streaming, no colour change.
 const TAB_DEMO_PREFIX = "Keep replies short and";
 const TAB_DEMO_GHOST = " lead with the answer, not the setup.";
 
-type TabDemoPhase = "typing" | "waiting" | "streaming" | "accepted";
+type TabDemoPhase =
+  | "typing"
+  | "press-invoke"
+  | "loading"
+  | "ghost"
+  | "press-accept"
+  | "accepted";
+
+const TAB_DEMO_PHASE_MS: Record<Exclude<TabDemoPhase, "typing">, number> = {
+  "press-invoke": 170,
+  loading: 950,
+  ghost: 1500,
+  "press-accept": 170,
+  accepted: 2400,
+};
+
+const TAB_DEMO_NEXT: Record<Exclude<TabDemoPhase, "typing">, TabDemoPhase> = {
+  "press-invoke": "loading",
+  loading: "ghost",
+  ghost: "press-accept",
+  "press-accept": "accepted",
+  accepted: "typing",
+};
 
 function TabFeatureDemo() {
   const [phase, setPhase] = useState<TabDemoPhase>("typing");
   const [typedChars, setTypedChars] = useState(0);
-  const [ghostWords, setGhostWords] = useState(0);
-  const ghostParts = TAB_DEMO_GHOST.split(/(?<= )/);
 
   useEffect(() => {
     if (phase === "typing") {
-      setGhostWords(0);
       if (typedChars >= TAB_DEMO_PREFIX.length) {
-        const id = window.setTimeout(() => setPhase("waiting"), 420);
+        const id = window.setTimeout(() => setPhase("press-invoke"), 420);
         return () => window.clearTimeout(id);
       }
       const id = window.setTimeout(() => setTypedChars((c) => c + 1), 46);
       return () => window.clearTimeout(id);
     }
-    if (phase === "waiting") {
-      const id = window.setTimeout(() => setPhase("streaming"), 900);
-      return () => window.clearTimeout(id);
-    }
-    if (phase === "streaming") {
-      if (ghostWords >= ghostParts.length) {
-        const id = window.setTimeout(() => setPhase("accepted"), 950);
-        return () => window.clearTimeout(id);
-      }
-      const id = window.setTimeout(() => setGhostWords((w) => w + 1), 90);
-      return () => window.clearTimeout(id);
-    }
-    // accepted: hold the finished line, then restart the loop.
     const id = window.setTimeout(() => {
-      setTypedChars(0);
-      setGhostWords(0);
-      setPhase("typing");
-    }, 2400);
+      if (phase === "accepted") setTypedChars(0);
+      setPhase(TAB_DEMO_NEXT[phase]);
+    }, TAB_DEMO_PHASE_MS[phase]);
     return () => window.clearTimeout(id);
-  }, [ghostParts.length, ghostWords, phase, typedChars]);
+  }, [phase, typedChars]);
 
-  const showGhost = phase === "streaming";
-  const ghostText = ghostParts.slice(0, ghostWords).join("");
+  const pressed = phase === "press-invoke" || phase === "press-accept";
+  const showGhost = phase === "ghost" || phase === "press-accept";
 
   return (
     <div className="mx-auto w-full max-w-[390px] overflow-hidden rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_10px_30px_rgba(28,28,26,0.10)]">
@@ -654,8 +660,8 @@ function TabFeatureDemo() {
         <span
           className={cn(
             "rounded-[6px] border border-[var(--creed-border)] bg-[var(--creed-surface-raised)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--creed-text-secondary)] transition-all duration-150",
-            (phase === "waiting" || phase === "accepted") &&
-              "border-[#22C55E]/50 text-[#16A34A] dark:text-[#4ade80]",
+            pressed &&
+              "translate-y-[1px] scale-95 bg-[var(--creed-border)] text-[var(--creed-text-primary)]",
           )}
         >
           Tab
@@ -666,12 +672,14 @@ function TabFeatureDemo() {
         <span>{TAB_DEMO_PREFIX.slice(0, typedChars)}</span>
         {phase === "accepted" ? <span>{TAB_DEMO_GHOST}</span> : null}
         {showGhost ? (
-          <span className="text-[var(--creed-text-tertiary)]">{ghostText}</span>
+          <span className="text-[var(--creed-text-tertiary)]">
+            {TAB_DEMO_GHOST}
+          </span>
         ) : null}
-        {phase !== "accepted" ? (
-          <span className="ml-[1px] inline-block h-[1.05em] w-[1.5px] translate-y-[0.18em] animate-pulse rounded-full bg-[var(--creed-text-secondary)]" />
+        {phase === "loading" ? (
+          <span className="creed-tab-spinner" aria-hidden />
         ) : null}
-        {showGhost && ghostWords >= ghostParts.length ? (
+        {phase === "ghost" ? (
           <span className="ml-2 inline-flex items-center gap-1 align-middle text-[11px] text-[var(--creed-text-tertiary)]">
             <kbd className="inline-flex h-4 items-center rounded border border-[var(--creed-border)] bg-[var(--creed-surface-raised)] px-1 text-[10px] font-medium leading-none text-[var(--creed-text-secondary)]">
               Tab
