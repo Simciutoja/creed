@@ -107,7 +107,7 @@ export function PricingPageView({ reference }: { reference?: ReactNode }) {
         <div className="flex flex-col gap-6 border-b border-[var(--creed-border)] pb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <AnimatedPageTitle text="Pricing" />
-            <p className="mt-5 max-w-2xl text-[18px] leading-8 text-[var(--creed-text-secondary)]">
+            <p className="t-lede mt-5 max-w-2xl text-[var(--creed-text-secondary)]">
               Run Creed yourself for free, or skip the setup and let us host it.
             </p>
           </div>

@@ -601,7 +601,7 @@ export function ExamplesPageView() {
       <main className="mx-auto max-w-6xl px-6 pb-20 pt-8 md:px-10 md:pb-24 md:pt-10">
         <div className="border-b border-[var(--creed-border)] pb-8">
           <AnimatedPageTitle text="Examples" />
-          <p className="mt-5 max-w-3xl text-[17px] leading-8 text-[var(--creed-text-secondary)] md:text-[18px]">
+          <p className="mt-5 max-w-3xl t-lede text-[var(--creed-text-secondary)]">
             What changes when every AI you use reads the same file before it
             answers. You write your Creed once, each agent reads it before it
             replies, and it stays plain Markdown you own.

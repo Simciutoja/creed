@@ -65,7 +65,7 @@ export function CompanyPageView() {
             text="One shared context file your whole team's agents read"
             className="max-w-3xl"
           />
-          <p className="mt-5 max-w-2xl text-[18px] leading-8 text-[var(--creed-text-secondary)]">
+          <p className="t-lede mt-5 max-w-2xl text-[var(--creed-text-secondary)]">
             The Company plan adds one shared Company Creed on top of your
             personal one. Every member&apos;s agents read the same company
             context before they answer, so you stop re-explaining how the team

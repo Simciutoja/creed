@@ -3233,7 +3233,7 @@ export function FileScreen() {
       <Dialog open={deleteFileOpen} onOpenChange={setDeleteFileOpen}>
         <DialogContent className="rounded-[var(--radius-xl)] border-[var(--creed-border)] bg-[var(--creed-surface)]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-3 text-[18px] font-medium">
+            <DialogTitle className="flex items-center gap-3">
               <AlertTriangle className="h-5 w-5 text-[#B91C1C]" />
               Delete Creed file
             </DialogTitle>

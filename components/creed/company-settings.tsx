@@ -2108,7 +2108,7 @@ export function CompanySettings() {
       >
         <DialogContent className="rounded-[var(--radius-xl)] border-[var(--creed-border)] bg-[var(--creed-surface)]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-3 text-[18px] font-medium">
+            <DialogTitle className="flex items-center gap-3">
               <AlertTriangle className="h-5 w-5 text-[#B91C1C]" />
               Delete archived section
             </DialogTitle>
@@ -2147,7 +2147,7 @@ export function CompanySettings() {
       >
         <DialogContent className="rounded-[var(--radius-xl)] border-[var(--creed-border)] bg-[var(--creed-surface)]">
           <DialogHeader>
-            <DialogTitle className="text-[18px] font-medium">
+            <DialogTitle>
               Transfer ownership
             </DialogTitle>
           </DialogHeader>
@@ -2183,7 +2183,7 @@ export function CompanySettings() {
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent className="rounded-[var(--radius-xl)] border-[var(--creed-border)] bg-[var(--creed-surface)]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-3 text-[18px] font-medium">
+            <DialogTitle className="flex items-center gap-3">
               <AlertTriangle className="h-5 w-5 text-[#B91C1C]" />
               Delete company Creed
             </DialogTitle>
