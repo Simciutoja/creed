@@ -316,7 +316,7 @@ function QualityNoteRow({ tone, note }: { tone: "good" | "bad"; note: QualityNot
   const accent = tone === "good" ? "var(--creed-success)" : "var(--creed-danger)";
   const symbol = tone === "good" ? "+" : "−";
   return (
-    <div className="group/note overflow-hidden rounded-md transition-colors hover:bg-[var(--creed-surface-raised)]">
+    <div className="group/note overflow-hidden rounded-md hover:bg-[var(--creed-surface-raised)]">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
@@ -337,7 +337,7 @@ function QualityNoteRow({ tone, note }: { tone: "good" | "bad"; note: QualityNot
             // Tertiary by default, flips to primary on row hover or when
             // expanded - same affordance as the profile / colour / accept-
             // all dropdown chevrons.
-            "h-3 w-3 shrink-0 transition-all duration-150",
+            "h-3 w-3 shrink-0 transition-[transform,colors] duration-150",
             open
               ? "rotate-180 text-[var(--creed-text-primary)]"
               : "rotate-0 text-[var(--creed-text-tertiary)] group-hover/note:text-[var(--creed-text-primary)]"

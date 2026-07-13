@@ -642,7 +642,7 @@ export function ExamplesPageView() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                         className="overflow-hidden"
                       >
                         <div className="mb-3 mt-1 space-y-3">
@@ -709,7 +709,7 @@ export function ExamplesPageView() {
                             exit={{ height: 0, opacity: 0 }}
                             transition={{
                               duration: 0.24,
-                              ease: [0.16, 1, 0.3, 1],
+                              ease: [0.22, 1, 0.36, 1],
                             }}
                             className="overflow-hidden"
                           >

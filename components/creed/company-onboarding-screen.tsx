@@ -1216,7 +1216,7 @@ function AnimatedHeadline({ text, className }: { text: string; className?: strin
                   <motion.span
                     key={`${glyph}-${lineIndex}-${wordIndex}-${glyphIndex}`}
                     variants={{ hidden: { opacity: 0, filter: "blur(10px)", y: 10 }, visible: { opacity: 1, filter: "blur(0px)", y: 0 } }}
-                    transition={{ duration: 0.62, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
                     className="inline-block whitespace-pre"
                   >
                     {glyph}
@@ -1225,7 +1225,7 @@ function AnimatedHeadline({ text, className }: { text: string; className?: strin
                 {wordIndex < words.length - 1 ? (
                   <motion.span
                     variants={{ hidden: { opacity: 0, filter: "blur(10px)", y: 10 }, visible: { opacity: 1, filter: "blur(0px)", y: 0 } }}
-                    transition={{ duration: 0.62, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
                     className="inline-block whitespace-pre"
                   >
                     {" "}

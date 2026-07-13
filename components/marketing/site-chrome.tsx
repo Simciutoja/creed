@@ -266,7 +266,7 @@ export function MarketingHeader({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               className="absolute right-4 top-[4.65rem] flex flex-col items-end gap-2 text-[var(--creed-text-primary)]"
             >
               {navGroups.map((group, gIndex) => (
@@ -281,13 +281,13 @@ export function MarketingHeader({
                     transition: {
                       duration: 0.24,
                       delay: (navGroups.length + 1 - gIndex) * 0.04,
-                      ease: [0.16, 1, 0.3, 1],
+                      ease: [0.22, 1, 0.36, 1],
                     },
                   }}
                   transition={{
                     duration: 0.24,
                     delay: 0.04 + gIndex * 0.05,
-                    ease: [0.16, 1, 0.3, 1],
+                    ease: [0.22, 1, 0.36, 1],
                   }}
                 >
                   <MobileNavRow
@@ -312,12 +312,12 @@ export function MarketingHeader({
                   exit={{
                     opacity: 0,
                     x: 10,
-                    transition: { duration: 0.24, delay: 0.04, ease: [0.16, 1, 0.3, 1] },
+                    transition: { duration: 0.24, delay: 0.04, ease: [0.22, 1, 0.36, 1] },
                   }}
                   transition={{
                     duration: 0.24,
                     delay: 0.04 + navGroups.length * 0.05,
-                    ease: [0.16, 1, 0.3, 1],
+                    ease: [0.22, 1, 0.36, 1],
                   }}
                 >
                   <MobileNavRow
@@ -347,12 +347,12 @@ export function MarketingHeader({
                   exit={{
                     opacity: 0,
                     x: 10,
-                    transition: { duration: 0.24, delay: 0, ease: [0.16, 1, 0.3, 1] },
+                    transition: { duration: 0.24, delay: 0, ease: [0.22, 1, 0.36, 1] },
                   }}
                   transition={{
                     duration: 0.24,
                     delay: 0.04 + (navGroups.length + 1) * 0.05,
-                    ease: [0.16, 1, 0.3, 1],
+                    ease: [0.22, 1, 0.36, 1],
                   }}
                 >
                   <GitHubStarButton onNavigate={() => setMobileMenuOpen(false)} />
@@ -542,7 +542,7 @@ function HeaderDropdown({
               initial={{ opacity: 0, y: -10, filter: "blur(8px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -10, filter: "blur(8px)" }}
-              transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               className={cn(
                 "absolute top-[2.6rem] z-10 flex w-[9rem] flex-col gap-2 text-white",
                 alignRight ? "right-0 items-end" : "left-0 items-start",
@@ -560,13 +560,13 @@ function HeaderDropdown({
                     transition: {
                       duration: 0.2,
                       delay: (items.length - 1 - index) * 0.04,
-                      ease: [0.16, 1, 0.3, 1],
+                      ease: [0.22, 1, 0.36, 1],
                     },
                   }}
                   transition={{
                     duration: 0.24,
                     delay: 0.04 + index * 0.04,
-                    ease: [0.16, 1, 0.3, 1],
+                    ease: [0.22, 1, 0.36, 1],
                   }}
                 >
                   <Link
@@ -706,7 +706,7 @@ function MobileNavRow({
             initial={{ opacity: 0, width: 0 }}
             animate={{ opacity: 1, width: "auto" }}
             exit={{ opacity: 0, width: 0 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="flex max-w-[min(68vw,24rem)] items-center gap-1 overflow-x-auto overflow-y-hidden overscroll-x-contain bg-black/[0.04] px-7 py-3 backdrop-blur-[12px] [scrollbar-width:none] [touch-action:pan-x] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
             style={{
               WebkitBackdropFilter: "blur(12px)",
@@ -732,7 +732,7 @@ function MobileNavRow({
                 transition={{
                   duration: 0.24,
                   delay: 0.05 + index * 0.05,
-                  ease: [0.16, 1, 0.3, 1],
+                  ease: [0.22, 1, 0.36, 1],
                 }}
               >
                 <Link
@@ -757,7 +757,7 @@ function MobileNavRow({
         {label}
         <ChevronLeft
           className={cn(
-            "h-3.5 w-3.5 transition-transform duration-300",
+            "h-3.5 w-3.5 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
             open && "rotate-180",
           )}
         />

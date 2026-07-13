@@ -200,7 +200,7 @@ export function InlineProposalDiff({
             className={cn(
               // Match the other dropdown chevrons: muted tertiary by default,
               // flips to primary (white in dark) on hover, smooth rotate.
-              "h-3.5 w-3.5 shrink-0 text-[var(--creed-text-tertiary)] transition-all duration-200 group-hover/diff:text-[var(--creed-text-primary)]",
+              "h-3.5 w-3.5 shrink-0 text-[var(--creed-text-tertiary)] transition-[transform,colors] duration-200 group-hover/diff:text-[var(--creed-text-primary)]",
               expanded ? "rotate-0" : "-rotate-90",
             )}
           />

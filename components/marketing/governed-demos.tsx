@@ -121,7 +121,7 @@ function DemoProposalDiff({
         <div className="flex min-w-0 flex-1 items-center gap-2 text-sm text-[var(--creed-text-secondary)]">
           <ChevronDown
             className={cn(
-              "h-3.5 w-3.5 shrink-0 text-[var(--creed-text-tertiary)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              "h-3.5 w-3.5 shrink-0 text-[var(--creed-text-tertiary)] transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
               expanded ? "rotate-0" : "-rotate-90"
             )}
           />

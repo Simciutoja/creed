@@ -31,7 +31,7 @@ const SHAKE_VARIANTS: Variants = {
   },
 };
 
-const FADE = { duration: 0.2, ease: [0.16, 1, 0.3, 1] as const };
+const FADE = { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const };
 
 const EyeToggleIcon = forwardRef<EyeToggleIconHandle, EyeToggleIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, off = false, ...props }, ref) => {
@@ -109,7 +109,7 @@ const EyeToggleIcon = forwardRef<EyeToggleIconHandle, EyeToggleIconProps>(
               d="m2 2 20 20"
               initial={false}
               animate={{ pathLength: off ? 1 : 0, opacity: off ? 1 : 0 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             />
           </motion.g>
         </svg>

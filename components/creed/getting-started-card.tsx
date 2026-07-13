@@ -122,7 +122,7 @@ export function GettingStartedCardView({
             <span className="absolute right-2.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-[8px] text-[var(--creed-text-secondary)] transition-colors hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]">
               <ChevronDown
                 className={cn(
-                  "h-4 w-4 transition-transform duration-300",
+                  "h-4 w-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
                   expanded && "rotate-180",
                 )}
               />

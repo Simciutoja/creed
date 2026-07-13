@@ -498,7 +498,7 @@ function SmoothExpand({
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{
-            height: { duration: 0.42, ease: [0.16, 1, 0.3, 1] },
+            height: { duration: 0.42, ease: [0.22, 1, 0.36, 1] },
             opacity: { duration: 0.3, ease: "easeOut" },
           }}
           className="overflow-hidden"
@@ -511,7 +511,7 @@ function SmoothExpand({
 }
 
 const CHEVRON_CLASS =
-  "h-3.5 w-3.5 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]";
+  "h-3.5 w-3.5 shrink-0 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]";
 
 // One row in a push / pull preview. Modified sections render the accent-tinted
 // diff dropdown; added / removed sections render the clean green / red

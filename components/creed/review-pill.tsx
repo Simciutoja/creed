@@ -145,7 +145,7 @@ export function ReviewPill({
                   }
             }
             onMouseLeave={isMobile ? undefined : scheduleClose}
-            className="group/trigger inline-flex h-7 items-center gap-2 rounded-md px-2.5 text-sm font-medium text-[var(--creed-text-secondary)] outline-none transition-colors hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)] focus:outline-none focus-visible:outline-none"
+            className="group/trigger inline-flex h-7 items-center gap-2 rounded-md px-2.5 text-sm font-medium text-[var(--creed-text-secondary)] outline-none transition-colors hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--creed-accent)]/45"
           >
             <span className="inline-flex items-center gap-1">
               <DiffBadge tone="added" count={totals.added} size="md" />
@@ -453,7 +453,7 @@ function ReviewPillItem({
   const isNewSectionProposal = item.proposal.draft.kind === "new-section";
 
   return (
-    <div className="rounded-[var(--radius-md)] transition-colors hover:bg-[var(--creed-surface-raised)]">
+    <div className="rounded-[var(--radius-md)] hover:bg-[var(--creed-surface-raised)]">
       <button
         type="button"
         onClick={(event) => {
@@ -461,7 +461,7 @@ function ReviewPillItem({
           event.stopPropagation();
           setOpen((value) => !value);
         }}
-        className="flex w-full min-w-0 items-center gap-2 px-2 py-1.5 text-left text-sm outline-none focus:outline-none focus-visible:outline-none"
+        className="flex w-full min-w-0 items-center gap-2 rounded-[var(--radius-md)] px-2 py-1.5 text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--creed-accent)]/45"
         aria-expanded={open}
       >
         <ChevronDown
