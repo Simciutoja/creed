@@ -162,9 +162,12 @@ export function QualityRing({
   actionable?: boolean;
   size?: number;
 }) {
-  const stroke = 3;
+  const stroke = 2.5;
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
+  // Derived from size (not a fixed px) so the actionable dot shrinks in step
+  // with the thinner ring and stays proportional at every call site's size.
+  const dotSize = Math.round(size * 0.28);
   const progress = Math.max(0, Math.min(100, score ?? 0));
   const target = score === undefined ? circumference * 0.72 : circumference - (progress / 100) * circumference;
 
@@ -242,8 +245,8 @@ export function QualityRing({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.45 }}
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{ backgroundColor: color }}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{ backgroundColor: color, width: dotSize, height: dotSize }}
           />
         ) : null}
       </AnimatePresence>
