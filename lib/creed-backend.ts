@@ -532,18 +532,25 @@ export async function clearGitHubIntegration(client: unknown, userId: string) {
   );
 }
 
-async function enrichUserForState(user: User) {
+// Admin re-fetch of the user, cached per request by id. The personal load path
+// enriches twice (loadActiveCreedState -> loadCreedState); keying the round-trip
+// on the id (a string, so React cache() dedupes by value) collapses those into
+// one getUserById per request.
+const fetchEnrichedUser = cache(async (userId: string): Promise<User | null> => {
   try {
     const admin = getSupabaseAdminClient();
-    const { data, error } = await admin.auth.admin.getUserById(user.id);
+    const { data, error } = await admin.auth.admin.getUserById(userId);
     if (error || !data.user) {
-      return user;
+      return null;
     }
-
     return data.user;
   } catch {
-    return user;
+    return null;
   }
+});
+
+async function enrichUserForState(user: User) {
+  return (await fetchEnrichedUser(user.id)) ?? user;
 }
 
 export function getAvatarInitials(name: string) {
@@ -1265,14 +1272,18 @@ async function loadCreedStateImpl(
   const proposalLimit = options?.proposalLimit ?? 500;
   const activityLimit = options?.activityLimit ?? 500;
   const db = client as SupabaseLikeClient;
-  const resolvedUser = await enrichUserForState(user);
-  const tokenRow = await ensureTokenRow(db, user.id);
-  const personalCreedId = await getPersonalCreedId(db, user.id);
+  // These five reads are independent of each other; only readMcpClientRows
+  // needs personalCreedId, so run the rest as one wave instead of a serial
+  // chain (was ~5 sequential round-trips, now 2).
+  const [resolvedUser, tokenRow, personalCreedId, githubIntegration, versionControl] =
+    await Promise.all([
+      enrichUserForState(user),
+      ensureTokenRow(db, user.id),
+      getPersonalCreedId(db, user.id),
+      readGithubIntegrationRow(db, user.id),
+      readVersionControlRow(db, user.id),
+    ]);
   const mcpClients = await readMcpClientRows(db, user.id, personalCreedId);
-  const [githubIntegration, versionControl] = await Promise.all([
-    readGithubIntegrationRow(db, user.id),
-    readVersionControlRow(db, user.id),
-  ]);
 
   if (!personalCreedId) {
     return {
