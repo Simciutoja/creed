@@ -116,7 +116,7 @@ function DemoProposalDiff({
   // Display only: the section auto-plays the review cycle, so nothing here is
   // clickable. The chevron and the Reject / Accept controls are presentational.
   return (
-    <div className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_8px_24px_rgba(28,28,26,0.04)]">
+    <div className="rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_8px_24px_rgba(28,28,26,0.04)]">
       <div className="flex items-center justify-between gap-3 py-2 pl-3 pr-2">
         <div className="flex min-w-0 flex-1 items-center gap-2 text-sm text-[var(--creed-text-secondary)]">
           <ChevronDown
@@ -225,7 +225,7 @@ export function ProposalDemo() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.24, ease: EASE }}
-            className="flex flex-col items-center justify-center gap-3 rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] px-6 py-12 text-center shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
+            className="flex flex-col items-center justify-center gap-3 rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] px-6 py-12 text-center shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
           >
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#ECFDF5] text-[#16A34A] dark:bg-[#052e1a]/55 dark:text-[#4ade80]">
               <Check className="h-4 w-4" />
@@ -279,7 +279,7 @@ export function DirectEditDemo() {
 
   return (
     <div className="w-full space-y-3">
-      <div className="flex items-center justify-between gap-4 rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 shadow-[0_8px_24px_rgba(28,28,26,0.04)]">
+      <div className="flex items-center justify-between gap-4 rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 shadow-[0_8px_24px_rgba(28,28,26,0.04)]">
         <div className="min-w-0">
           <div className="text-[14px] font-medium text-[var(--creed-text-primary)]">Require approval for agent edits</div>
           <div className="mt-0.5 text-[13px] text-[var(--creed-text-secondary)]">Review proposed edits first.</div>
@@ -287,7 +287,7 @@ export function DirectEditDemo() {
         <ApprovalToggle on={approval} />
       </div>
 
-      <div className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_8px_24px_rgba(28,28,26,0.04)]">
+      <div className="rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_8px_24px_rgba(28,28,26,0.04)]">
         <div className="px-3 pb-2 pt-2.5">
           <div className="flex items-center gap-2">
             <span className="text-[14px] font-medium text-[var(--creed-text-primary)]">Beliefs</span>

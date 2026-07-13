@@ -116,7 +116,7 @@ function DemoCard({
   return (
     <div
       className={cn(
-        "flex w-full flex-col rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 shadow-[0_8px_24px_rgba(28,28,26,0.06)]",
+        "flex w-full flex-col rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 shadow-[0_8px_24px_rgba(28,28,26,0.06)]",
         className,
       )}
     >
@@ -222,7 +222,7 @@ export function ReadDemo() {
             transition={{ duration: 0.3, ease: EASE }}
             className="flex justify-end"
           >
-            <div className="max-w-[84%] rounded-[14px] bg-[var(--creed-surface-raised)] px-3.5 py-2 text-[13px] leading-snug text-[var(--creed-text-primary)]">
+            <div className="max-w-[84%] rounded-lg bg-[var(--creed-surface-raised)] px-3.5 py-2 text-[13px] leading-snug text-[var(--creed-text-primary)]">
               {READ_PROMPT}
             </div>
           </motion.div>
@@ -232,7 +232,7 @@ export function ReadDemo() {
             transition={{ duration: 0.3, ease: EASE }}
             className="flex"
           >
-            <div className="inline-flex items-center gap-2 rounded-[14px] bg-[var(--creed-surface-raised)] px-2.5 py-1.5 text-[12px] font-medium text-[var(--creed-text-secondary)]">
+            <div className="inline-flex items-center gap-2 rounded-lg bg-[var(--creed-surface-raised)] px-2.5 py-1.5 text-[12px] font-medium text-[var(--creed-text-secondary)]">
               <CreedGlyph className="h-3 w-3" />
               <span>Read Creed</span>
               {step >= 3 ? (
@@ -260,7 +260,7 @@ export function ReadDemo() {
         </div>
 
         {/* Mini prompt bar pinned to the bottom: the prompt types in here, then sends. */}
-        <div className="mt-auto flex items-center gap-2 rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] py-1.5 pl-3.5 pr-1.5">
+        <div className="mt-auto flex items-center gap-2 rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] py-1.5 pl-3.5 pr-1.5">
           <span className="min-w-0 flex-1 truncate text-[13px] text-[var(--creed-text-primary)]">
             {step === 0 && typed ? (
               typed
@@ -275,7 +275,7 @@ export function ReadDemo() {
               prompt is sitting in the bar - so sending reads like a click. */}
           <span
             className={cn(
-              "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[10px] transition-colors duration-200",
+              "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm transition-colors duration-200",
               step === 0 && typed
                 ? "bg-[var(--creed-accent)] text-white"
                 : "bg-[var(--creed-surface-raised)] text-[var(--creed-text-tertiary)]",
@@ -330,7 +330,7 @@ function MiniProposalDiff({
   );
   const stats = useMemo(() => summarizeDiff(parts), [parts]);
   return (
-    <div className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_8px_24px_rgba(28,28,26,0.04)]">
+    <div className="rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_8px_24px_rgba(28,28,26,0.04)]">
       <div className="flex items-center gap-2 py-2 pl-3 pr-2 text-sm text-[var(--creed-text-secondary)]">
         <ChevronDown
           className={cn(

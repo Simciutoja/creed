@@ -43,7 +43,7 @@ export function AuthorizeSpacePicker({ spaces }: { spaces: SpaceOption[] }) {
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="inline-flex h-9 w-full items-center justify-between gap-2 rounded-[12px] border border-[var(--creed-border)] bg-[var(--creed-surface)] px-3 text-[13px] text-[var(--creed-text-primary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] aria-expanded:bg-[var(--creed-surface-raised)]"
+            className="inline-flex h-9 w-full items-center justify-between gap-2 rounded-md border border-[var(--creed-border)] bg-[var(--creed-surface)] px-3 text-[13px] text-[var(--creed-text-primary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] aria-expanded:bg-[var(--creed-surface-raised)]"
           >
             <span className="flex min-w-0 items-center gap-2">
               {selected ? (

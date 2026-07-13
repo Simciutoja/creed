@@ -13,7 +13,7 @@ function Block({ className }: { className?: string }) {
 function Card({ className, children }: { className?: string; children?: ReactNode }) {
   return (
     <div
-      className={`rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] ${className ?? ""}`}
+      className={`rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] ${className ?? ""}`}
     >
       {children}
     </div>
@@ -48,7 +48,7 @@ export default function ConnectionsLoading() {
                 </div>
               </div>
             </div>
-            <Block className="mt-4 h-[34px] w-[min(100%,26rem)] rounded-[10px]" />
+            <Block className="mt-4 h-[34px] w-[min(100%,26rem)] rounded-sm" />
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <Block className="h-9 w-[116px] rounded-md" />
               <Block className="h-9 w-44 rounded-md" />
@@ -73,7 +73,7 @@ export default function ConnectionsLoading() {
               {[0, 1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4"
+                  className="rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4"
                 >
                   <Block className="h-3 w-20" />
                   <Block className="mt-2.5 h-7 w-14" />
@@ -88,14 +88,14 @@ export default function ConnectionsLoading() {
                 <Block className="h-3.5 w-28" />
                 <Block className="h-8 w-24 rounded-md" />
               </div>
-              <Block className="mt-4 h-[240px] w-full rounded-[10px]" />
+              <Block className="mt-4 h-[240px] w-full rounded-sm" />
             </Card>
 
             {/* Proposal outcomes + section coverage */}
             <div className="mt-4 grid gap-4 lg:grid-cols-2">
               <Card className="p-5">
                 <Block className="h-3.5 w-32" />
-                <Block className="mt-4 h-[180px] w-full rounded-[10px]" />
+                <Block className="mt-4 h-[180px] w-full rounded-sm" />
               </Card>
               <Card className="p-5">
                 <Block className="h-3.5 w-32" />

@@ -16,14 +16,14 @@ function PersonAvatar({ person, label }: { person: Person; label: string }) {
   const [failed, setFailed] = useState(false);
   const showImage = Boolean(person.avatarUrl) && !failed;
   return (
-    <Avatar className="h-11 w-11 shrink-0 overflow-hidden rounded-[13px] border border-[var(--creed-border)] bg-[var(--creed-surface-raised)] after:rounded-[13px]">
+    <Avatar className="h-11 w-11 shrink-0 overflow-hidden rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface-raised)] after:rounded-lg">
       {showImage && person.avatarUrl ? (
         <Image
           key={person.avatarUrl}
           src={person.avatarUrl}
           alt={label}
           fill
-          className="rounded-[13px] object-cover"
+          className="rounded-lg object-cover"
           referrerPolicy="no-referrer"
           unoptimized
           onError={() => setFailed(true)}

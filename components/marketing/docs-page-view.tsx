@@ -921,7 +921,7 @@ function MonoCode({ children }: { children: ReactNode }) {
 function FileBlock({ label, children }: { label: string; children: string }) {
   const [copied, setCopied] = useState(false);
   return (
-    <div className="mt-6 overflow-hidden rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)]">
+    <div className="mt-6 overflow-hidden rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)]">
       <div className="flex items-center justify-between border-b border-[var(--creed-border)] py-2 pl-4 pr-2">
         <span className="text-[0.8rem] font-medium text-[var(--creed-text-secondary)]">
           {label}
@@ -1241,7 +1241,7 @@ export function DocsPageView() {
                       {loopSteps.map((loopStep) => (
                         <div
                           key={loopStep.step}
-                          className="rounded-[20px] bg-[var(--creed-surface)] p-5"
+                          className="rounded-xl bg-[var(--creed-surface)] p-5"
                         >
                           <div className="flex items-center gap-3">
                             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] bg-[var(--creed-accent)] text-[13px] font-medium text-[var(--creed-surface)]">
@@ -1350,7 +1350,7 @@ export function DocsPageView() {
                       <div
                         key={card.name}
                         id={`agent-${card.glyph}`}
-                        className="scroll-mt-28 rounded-[20px] bg-[var(--creed-surface)] p-5"
+                        className="scroll-mt-28 rounded-xl bg-[var(--creed-surface)] p-5"
                       >
                         <div className="flex items-center gap-3">
                           <IntegrationGlyph
@@ -1647,7 +1647,7 @@ export function DocsPageView() {
                     {httpEndpoints.map((endpoint) => (
                       <div
                         key={endpoint.path}
-                        className="rounded-[16px] bg-[var(--creed-surface)] p-5"
+                        className="rounded-xl bg-[var(--creed-surface)] p-5"
                       >
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="rounded-[6px] bg-[var(--creed-surface-raised)] px-2 py-0.5 text-[12px] font-medium text-[var(--creed-accent)]">

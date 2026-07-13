@@ -168,7 +168,7 @@ export function MarketingHeader({
         <div
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-300 ease-out",
+            "pointer-events-none absolute inset-0 rounded-xl transition-opacity duration-300 ease-out",
             isScrolled
               ? "bg-[color:var(--creed-surface)]/95 opacity-100 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.22)] backdrop-blur-sm"
               : "opacity-0",

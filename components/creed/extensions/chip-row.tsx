@@ -94,7 +94,7 @@ function ChipRowView({ node, updateAttributes, editor }: NodeViewProps) {
 
   return (
     <NodeViewWrapper className="chip-row-node font-sans">
-      <div className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-background)] p-4 font-sans">
+      <div className="rounded-lg border border-[var(--creed-border)] bg-[var(--creed-background)] p-4 font-sans">
         <div className="flex flex-wrap gap-2">
           {chips.map((chip) => (
             <span

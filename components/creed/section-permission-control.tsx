@@ -138,7 +138,7 @@ export function SectionPermissionControl({
   return (
     <div
       className={cn(
-        "inline-flex shrink-0 items-center gap-0.5 rounded-[10px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-0.5 transition-opacity duration-150",
+        "inline-flex shrink-0 items-center gap-0.5 rounded-sm border border-[var(--creed-border)] bg-[var(--creed-surface)] p-0.5 transition-opacity duration-150",
         // No shared level (sections differ): grey the control to read as
         // "mixed / not applied", but it stays clickable to set one level.
         value === null && "opacity-45",

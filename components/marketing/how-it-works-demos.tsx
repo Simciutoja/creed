@@ -70,7 +70,7 @@ export function CreateDemo() {
 
   return (
     <div className="w-full">
-      <div className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 shadow-[0_8px_24px_rgba(28,28,26,0.06)]">
+      <div className="rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 shadow-[0_8px_24px_rgba(28,28,26,0.06)]">
         <div className="h-1 w-full overflow-hidden rounded-full bg-[var(--creed-surface-raised)]">
           <motion.div
             className="h-full rounded-full"
@@ -156,7 +156,7 @@ export function ConnectDemo() {
 
   return (
     <div className="w-full">
-      <div className="flex w-full flex-col rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5 text-left">
+      <div className="flex w-full flex-col rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5 text-left">
         <div className="flex items-center gap-3">
           {/* All-agents glyph recoloured by the cycling palette: the asset is a
               monochrome svg, so we mask the cycling background to its shape. */}
@@ -223,7 +223,7 @@ export function UsageDemo() {
 
   return (
     <div className="w-full">
-      <div className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 shadow-[0_8px_24px_rgba(28,28,26,0.06)]">
+      <div className="rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 shadow-[0_8px_24px_rgba(28,28,26,0.06)]">
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-[13px] font-medium text-[var(--creed-text-secondary)]">

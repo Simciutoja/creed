@@ -81,7 +81,7 @@ export function GettingStartedCardView({
   const total = GETTING_STARTED_STEPS.length;
 
   return (
-    <div className="overflow-hidden rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_10px_30px_rgba(28,28,26,0.10)]">
+    <div className="overflow-hidden rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_10px_30px_rgba(28,28,26,0.10)]">
       {allDone ? (
         // Completion: a toast-shaped confirmation. The X sits in the same
         // slot the chevron occupied, styled like a toast close button.

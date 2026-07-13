@@ -199,7 +199,7 @@ function ChartTooltipContent({
   return (
     <div
       className={cn(
-        "grid min-w-[8rem] items-start gap-1.5 rounded-[10px] border border-[var(--creed-border)] bg-[var(--creed-surface)] px-2.5 py-2 text-[12px] shadow-[0_12px_32px_rgba(28,28,26,0.12)] animate-in fade-in-0 zoom-in-95 transition-[opacity,transform] duration-150 ease-out",
+        "grid min-w-[8rem] items-start gap-1.5 rounded-sm border border-[var(--creed-border)] bg-[var(--creed-surface)] px-2.5 py-2 text-[12px] shadow-[0_12px_32px_rgba(28,28,26,0.12)] animate-in fade-in-0 zoom-in-95 transition-[opacity,transform] duration-150 ease-out",
         active ? "opacity-100 scale-100" : "opacity-0 scale-95",
         className
       )}

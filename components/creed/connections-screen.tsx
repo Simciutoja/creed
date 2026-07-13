@@ -116,7 +116,7 @@ export function ConnectionsScreen() {
         </div>
 
         <div className="mt-5 grid items-start gap-4 lg:grid-cols-2">
-          <div className="flex h-auto flex-col self-start rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 md:p-5">
+          <div className="flex h-auto flex-col self-start rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 md:p-5">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-3">
                 {/* MCP glyph recoloured by the cycling palette: the asset is a
@@ -226,7 +226,7 @@ export function ConnectionsScreen() {
             a disabled state until the CLI connection type ships. */}
           {/* Whole card sits at half opacity with pointer events off - one
               clear "not live yet" signal instead of piecemeal greyed bits. */}
-          <div className="pointer-events-none flex h-auto select-none flex-col self-start rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 opacity-50 md:p-5">
+          <div className="pointer-events-none flex h-auto select-none flex-col self-start rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 opacity-50 md:p-5">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-3">
                 <span

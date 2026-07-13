@@ -189,7 +189,7 @@ function BillingToggle({
   ];
 
   return (
-    <div className="relative inline-flex items-center rounded-[10px] bg-[var(--creed-surface)] p-1">
+    <div className="relative inline-flex items-center rounded-sm bg-[var(--creed-surface)] p-1">
       {options.map((option) => {
         const active = cycle === option.value;
         return (
@@ -255,7 +255,7 @@ function PricingCard({
   billing?: BillingSummary;
 }) {
   return (
-    <div className="relative flex flex-col overflow-hidden rounded-[20px] bg-[var(--creed-surface)] p-6 md:p-7">
+    <div className="relative flex flex-col overflow-hidden rounded-xl bg-[var(--creed-surface)] p-6 md:p-7">
       {owned ? <OwnedCorner tone={ownedTone} /> : null}
       <div>
         <div

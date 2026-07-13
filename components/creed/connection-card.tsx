@@ -273,7 +273,7 @@ export function ConnectionCard({
   };
 
   return (
-    <div className="flex h-auto flex-col self-start rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4">
+    <div className="flex h-auto flex-col self-start rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <IntegrationGlyph

@@ -351,7 +351,7 @@ export function CompanyOnboardingScreen({
 
       <div className="flex min-h-[calc(100dvh-2px)] flex-col px-6 py-5 md:h-[calc(100vh-2px)] md:px-10 md:py-6">
         <div className="flex items-center justify-between">
-          <Link href="/home" aria-label="Creed home" className="-ml-2 inline-flex items-center rounded-[10px] px-2 py-1.5 transition-opacity duration-200 hover:opacity-60">
+          <Link href="/home" aria-label="Creed home" className="-ml-2 inline-flex items-center rounded-sm px-2 py-1.5 transition-opacity duration-200 hover:opacity-60">
             <CreedWordmark className="ml-0" />
           </Link>
           <div className="text-[12px] text-[var(--creed-text-tertiary)]">{`${step + 1} of ${TOTAL_STEPS}`}</div>
@@ -390,7 +390,7 @@ export function CompanyOnboardingScreen({
                         value={answers.companyName}
                         onChange={(e) => set("companyName", e.target.value)}
                         placeholder="e.g. Bad Company"
-                        className="h-12 rounded-2xl border-[var(--creed-border)] px-4 text-[15px]"
+                        className="h-12 rounded-xl border-[var(--creed-border)] px-4 text-[15px]"
                       />
                     </QuestionStep>
                   ) : null}
@@ -491,7 +491,7 @@ export function CompanyOnboardingScreen({
                           if (pasteError) setPasteError(null);
                         }}
                         className={cn(
-                          "min-h-[220px] max-h-[44vh] resize-none overflow-y-auto rounded-2xl px-4 py-4 font-mono text-[14px] leading-7",
+                          "min-h-[220px] max-h-[44vh] resize-none overflow-y-auto rounded-xl px-4 py-4 font-mono text-[14px] leading-7",
                           pasteError
                             ? "border-[#DC2626] focus-visible:border-[#DC2626] focus-visible:ring-[#DC2626]/15"
                             : "border-[var(--creed-border)]"
@@ -517,7 +517,7 @@ export function CompanyOnboardingScreen({
                           initial={{ opacity: 0, y: 18, scale: 0.985, filter: "blur(10px)" }}
                           animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
                           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                          className="mx-auto mt-10 max-w-[920px] overflow-hidden rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left"
+                          className="mx-auto mt-10 max-w-[920px] overflow-hidden rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left"
                         >
                           <div className="md:h-[440px] md:overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                             <div className="mx-auto max-w-[920px] space-y-9 px-6 py-8 md:px-10">
@@ -555,7 +555,7 @@ export function CompanyOnboardingScreen({
                               if (e.key === "Enter" && inviteEmail.trim() && !busy) void sendInvite();
                             }}
                             placeholder="teammate@company.com"
-                            className="h-11 flex-1 rounded-[12px] border-[var(--creed-border)] px-3 text-[14px]"
+                            className="h-11 flex-1 rounded-md border-[var(--creed-border)] px-3 text-[14px]"
                           />
                           <Button
                             className={`${INVITE_BUTTON} h-11`}
@@ -591,11 +591,11 @@ export function CompanyOnboardingScreen({
                               transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                               className="mt-5 overflow-hidden"
                             >
-                              <div className="flex flex-col divide-y divide-[var(--creed-border)] rounded-[14px] border border-[var(--creed-border)] px-4">
+                              <div className="flex flex-col divide-y divide-[var(--creed-border)] rounded-lg border border-[var(--creed-border)] px-4">
                                 {invites.map((invite) => (
                                   <div key={invite.id} className="flex items-center justify-between gap-4 py-4">
                                     <div className="flex min-w-0 items-center gap-3">
-                                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-dashed border-[var(--creed-border-strong)] text-[var(--creed-text-tertiary)]">
+                                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-dashed border-[var(--creed-border-strong)] text-[var(--creed-text-tertiary)]">
                                         <Mail className="h-4 w-4" />
                                       </span>
                                       <div className="min-w-0">
@@ -710,7 +710,7 @@ function QTextarea({ value, onChange, placeholder }: { value: string; onChange: 
       onChange={(e) => onChange(e.target.value)}
       data-disable-continue="true"
       placeholder={placeholder}
-      className="min-h-[180px] rounded-2xl border-[var(--creed-border)] px-4 py-4 text-[15px] leading-7"
+      className="min-h-[180px] rounded-xl border-[var(--creed-border)] px-4 py-4 text-[15px] leading-7"
     />
   );
 }
@@ -731,7 +731,7 @@ const STRIP_ROWS: { name: string; accent: AccentKey }[] = [
 
 function SectionStripsCard() {
   return (
-    <div className="mx-auto mt-10 max-w-[360px] rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5 text-left">
+    <div className="mx-auto mt-10 max-w-[360px] rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5 text-left">
       {STRIP_ROWS.map((row, index) => (
         <motion.div
           key={row.name}
@@ -786,7 +786,7 @@ const ATTRIBUTION_STATUS_STYLES: Record<AttributionEntry["status"], string> = {
 function AttributionCard() {
   return (
     <motion.div
-      className="mx-auto mt-10 max-w-[520px] overflow-hidden rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
+      className="mx-auto mt-10 max-w-[520px] overflow-hidden rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
@@ -835,7 +835,7 @@ function ProposalCard() {
 
   return (
     <motion.div
-      className="mx-auto mt-10 max-w-[640px] rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
+      className="mx-auto mt-10 max-w-[640px] rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
@@ -906,7 +906,7 @@ function SelectPill({ label, className }: { label: string; className?: string })
   return (
     <span
       className={cn(
-        "inline-flex h-9 shrink-0 items-center justify-between gap-2 rounded-[12px] border border-[var(--creed-border)] bg-[var(--creed-surface)] px-3 text-[13px] text-[var(--creed-text-primary)]",
+        "inline-flex h-9 shrink-0 items-center justify-between gap-2 rounded-md border border-[var(--creed-border)] bg-[var(--creed-surface)] px-3 text-[13px] text-[var(--creed-text-primary)]",
         className
       )}
     >
@@ -919,7 +919,7 @@ function SelectPill({ label, className }: { label: string; className?: string })
 function PermissionsCard() {
   return (
     <motion.div
-      className="mx-auto mt-10 w-full max-w-[440px] rounded-[12px] border border-[var(--creed-border)] bg-[var(--creed-surface)] px-4 pt-4 pb-2.5 text-left shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
+      className="mx-auto mt-10 w-full max-w-[440px] rounded-md border border-[var(--creed-border)] bg-[var(--creed-surface)] px-4 pt-4 pb-2.5 text-left shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
@@ -1034,7 +1034,7 @@ function ControlActivityRow({
 
   return (
     <motion.div
-      className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-3"
+      className="rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-3"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay: 0.22 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}

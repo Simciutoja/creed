@@ -11,7 +11,7 @@ export type ProfileAvatarKind = "person" | "company";
 
 const SIZE_CLASS = {
   sm: "h-6 w-6 rounded-[8px] after:rounded-[8px]",
-  md: "h-9 w-9 rounded-[10px] after:rounded-[10px]",
+  md: "h-9 w-9 rounded-sm after:rounded-sm",
   lg: "h-40 w-40 rounded-[26px] after:rounded-[26px]",
   responsive:
     "h-[calc(1.25rem+0.5rem+2.75rem)] w-[calc(1.25rem+0.5rem+2.75rem)] rounded-[18px] after:rounded-[18px] md:h-[clamp(7rem,28vw,10rem)] md:w-[clamp(7rem,28vw,10rem)] md:rounded-[26px] md:after:rounded-[26px]",
@@ -19,7 +19,7 @@ const SIZE_CLASS = {
 
 const IMAGE_RADIUS = {
   sm: "rounded-[8px]",
-  md: "rounded-[10px]",
+  md: "rounded-sm",
   lg: "rounded-[26px]",
   responsive: "rounded-[18px] md:rounded-[26px]",
 } as const;

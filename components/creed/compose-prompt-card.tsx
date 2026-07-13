@@ -34,7 +34,7 @@ export function ComposePromptCard({
   onCopy: () => void;
 }) {
   return (
-    <div className="mx-auto mt-9 flex w-full max-w-lg flex-col rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5 text-left">
+    <div className="mx-auto mt-9 flex w-full max-w-lg flex-col rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5 text-left">
       <div className="flex flex-wrap items-center gap-2.5">
         {PROMPT_GLYPH_KINDS.map((kind) => (
           <IntegrationGlyph

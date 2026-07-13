@@ -96,7 +96,7 @@ export function CompanyPageView() {
             {HOW.map((item) => (
               <div
                 key={item.title}
-                className="rounded-[16px] bg-[var(--creed-surface)] p-5"
+                className="rounded-xl bg-[var(--creed-surface)] p-5"
               >
                 <div className="line-clamp-1 text-[16px] font-medium text-[var(--creed-text-primary)]">
                   {item.title}
@@ -122,7 +122,7 @@ export function CompanyPageView() {
             {ROLES.map((role) => (
               <article
                 key={role.name}
-                className="flex flex-col overflow-hidden rounded-2xl bg-[var(--creed-surface)]"
+                className="flex flex-col overflow-hidden rounded-xl bg-[var(--creed-surface)]"
               >
                 <div className={cn("px-5 py-2.5", role.fill)}>
                   <span className={cn("text-[14px] font-medium", role.text)}>
@@ -153,7 +153,7 @@ export function CompanyPageView() {
               return (
                 <div
                   key={cycle}
-                  className="rounded-[16px] bg-[var(--creed-surface)] p-5"
+                  className="rounded-xl bg-[var(--creed-surface)] p-5"
                 >
                   <div className="text-[13px] font-medium capitalize text-[var(--creed-text-tertiary)]">
                     {cycle}

@@ -274,7 +274,7 @@ function WhyUseItSection() {
         {WHY_USE_IT_STATS.map((stat) => (
           <article
             key={stat.label}
-            className="flex h-full min-h-[250px] flex-col rounded-2xl bg-[var(--creed-surface)] p-6 md:p-7"
+            className="flex h-full min-h-[250px] flex-col rounded-xl bg-[var(--creed-surface)] p-6 md:p-7"
           >
             <div
               className="text-[4rem] font-semibold leading-[0.9] tracking-[-0.045em] md:text-[5.25rem]"
@@ -324,7 +324,7 @@ function PlateCard({
   return (
     <article
       className={cn(
-        "flex min-w-0 flex-col rounded-2xl bg-[var(--creed-surface)] p-3 md:p-4",
+        "flex min-w-0 flex-col rounded-xl bg-[var(--creed-surface)] p-3 md:p-4",
         !square && "h-full",
       )}
     >
@@ -418,7 +418,7 @@ function LoopRow({
   return (
     // Each row is its own surface card (matching the other sections), holding the
     // explainer copy and the demo side by side.
-    <article className="rounded-2xl bg-[var(--creed-surface)] p-3 md:p-4">
+    <article className="rounded-xl bg-[var(--creed-surface)] p-3 md:p-4">
       <div className="grid items-stretch gap-3 lg:grid-cols-2 lg:gap-4">
         <div
           className={cn(
@@ -440,7 +440,7 @@ function LoopRow({
               smoothly without changing the plate's height. `inert` keeps the
               decorative demos' buttons out of the tab order + a11y tree. */}
           <div
-            className="flex min-h-[420px] w-full items-center justify-center rounded-[16px] p-5"
+            className="flex min-h-[420px] w-full items-center justify-center rounded-xl p-5"
             style={{ backgroundColor: plate }}
           >
             <div className="w-full max-w-[440px]" inert>
@@ -543,7 +543,7 @@ function PanelFeatureDemo() {
   const typedPrompt = useTypedPanelPrompt(step.prompt, stepIndex);
 
   return (
-    <div className="mx-auto w-full max-w-[390px] overflow-hidden rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_10px_30px_rgba(28,28,26,0.10)]">
+    <div className="mx-auto w-full max-w-[390px] overflow-hidden rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_10px_30px_rgba(28,28,26,0.10)]">
       <div className="flex items-center gap-2 border-b border-[var(--creed-border)] px-3.5 py-3">
         <span className="flex h-6 w-6 items-center justify-center rounded-[8px] bg-[#FCE7F3] text-[#DB2777] dark:bg-[#3F1230] dark:text-[#F472B6]">
           <CommandIcon size={14} />
@@ -569,7 +569,7 @@ function PanelFeatureDemo() {
       </div>
 
       <div className="p-3.5">
-        <div className="rounded-[12px] border border-[var(--creed-border)] bg-[var(--creed-surface)] px-3 py-2.5 text-[13px] text-[var(--creed-text-primary)]">
+        <div className="rounded-md border border-[var(--creed-border)] bg-[var(--creed-surface)] px-3 py-2.5 text-[13px] text-[var(--creed-text-primary)]">
           {typedPrompt || (
             <span className="text-[var(--creed-text-tertiary)]">
               {step.prompt}
@@ -578,7 +578,7 @@ function PanelFeatureDemo() {
         </div>
 
         <div className="mt-3 space-y-2">
-          <div className="flex items-center gap-2 rounded-[12px] bg-[var(--creed-surface-raised)] px-3 py-2.5">
+          <div className="flex items-center gap-2 rounded-md bg-[var(--creed-surface-raised)] px-3 py-2.5">
             <span className="h-1.5 w-1.5 shrink-0 rounded-[3px] bg-[#DB2777]" />
             <span className="min-w-0 flex-1 truncate text-[13px] text-[var(--creed-text-primary)]">
               {step.status}
@@ -651,7 +651,7 @@ function TabFeatureDemo() {
   const showGhost = phase === "ghost" || phase === "press-accept";
 
   return (
-    <div className="mx-auto w-full max-w-[390px] overflow-hidden rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_10px_30px_rgba(28,28,26,0.10)]">
+    <div className="mx-auto w-full max-w-[390px] overflow-hidden rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] shadow-[0_10px_30px_rgba(28,28,26,0.10)]">
       <div className="flex items-center gap-2 border-b border-[var(--creed-border)] px-3.5 py-3">
         <span className="h-4 w-1 shrink-0 rounded-[3px] bg-[#06B6D4]" />
         <div className="min-w-0 flex-1 text-[13px] font-medium text-[var(--creed-text-primary)]">
@@ -853,7 +853,7 @@ function StackTile({ brand, label }: { brand: BrandLogoKey; label: string }) {
   const style = STACK_TILE_STYLE[brand];
 
   return (
-    <div className="flex w-full min-w-0 flex-col overflow-hidden rounded-2xl bg-[var(--creed-surface)]">
+    <div className="flex w-full min-w-0 flex-col overflow-hidden rounded-xl bg-[var(--creed-surface)]">
       <div
         className={cn(
           "flex min-h-10 items-center justify-center px-2 py-2.5",
@@ -953,7 +953,7 @@ function RoadmapTeaserCard({
 }) {
   const style = ROADMAP_STATUS_STYLE[column.id];
   return (
-    <article className="flex w-full flex-col overflow-hidden rounded-2xl bg-[var(--creed-surface)] sm:w-[340px]">
+    <article className="flex w-full flex-col overflow-hidden rounded-xl bg-[var(--creed-surface)] sm:w-[340px]">
       <div className={cn("px-5 py-2.5", style.fill)}>
         <span className={cn("text-[14px] font-medium", style.text)}>
           {column.label}

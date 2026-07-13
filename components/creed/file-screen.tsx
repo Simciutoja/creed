@@ -627,7 +627,7 @@ function SectionChangeRow({ change }: { change: SectionChange }) {
             colour (no border) so the diff stays legible regardless of the
             section's accent tint. */}
         <div className="px-2 pb-2">
-          <div className="creed-diff-block rounded-[10px] bg-[var(--creed-surface)] px-3.5 py-3">
+          <div className="creed-diff-block rounded-sm bg-[var(--creed-surface)] px-3.5 py-3">
             {unchanged ? (
               <span className="text-[var(--creed-text-tertiary)]">
                 No textual change
@@ -4349,7 +4349,7 @@ function ActivityRail({
                   <button
                     type="button"
                     onClick={() => setVisibleCount((current) => current + 50)}
-                    className="w-full rounded-[12px] border border-[var(--creed-border)] bg-[var(--creed-surface)] px-3 py-2 text-sm font-medium text-[var(--creed-text-secondary)] transition-colors hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]"
+                    className="w-full rounded-md border border-[var(--creed-border)] bg-[var(--creed-surface)] px-3 py-2 text-sm font-medium text-[var(--creed-text-secondary)] transition-colors hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]"
                   >
                     Load more · {filteredAll.length - visibleCount} remaining
                   </button>
@@ -4407,7 +4407,7 @@ function ActivityRow({
     (entry.beforeText?.startsWith("Keep ") ?? false);
 
   return (
-    <div className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-3 transition-colors duration-150 hover:bg-[var(--creed-background)]">
+    <div className="rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-3 transition-colors duration-150 hover:bg-[var(--creed-background)]">
       <button
         type="button"
         className="group w-full text-left"

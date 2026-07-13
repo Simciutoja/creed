@@ -251,7 +251,7 @@ export function OnboardingScreen({
           <Link
             href="/home"
             aria-label="Creed home"
-            className="-ml-2 inline-flex items-center rounded-[10px] px-2 py-1.5 transition-opacity duration-200 hover:opacity-60"
+            className="-ml-2 inline-flex items-center rounded-sm px-2 py-1.5 transition-opacity duration-200 hover:opacity-60"
           >
             <CreedWordmark className="ml-0" />
           </Link>
@@ -300,7 +300,7 @@ export function OnboardingScreen({
                           data-disable-continue="true"
                           value={state.onboarding.identity}
                           onChange={(event) => updateOnboarding({ identity: event.target.value })}
-                          className="min-h-[220px] rounded-2xl border-[var(--creed-border)] px-4 py-4 text-[15px] leading-7"
+                          className="min-h-[220px] rounded-xl border-[var(--creed-border)] px-4 py-4 text-[15px] leading-7"
                           placeholder="e.g. Founder and engineer building Creed end to end. Strong product taste, allergic to bloated process. Live in Figma, Linear, and the terminal all day."
                         />
                       </AnimatedBlock>
@@ -339,7 +339,7 @@ export function OnboardingScreen({
                           data-disable-continue="true"
                           value={state.onboarding.goals}
                           onChange={(event) => updateOnboarding({ goals: event.target.value })}
-                          className="min-h-[200px] rounded-2xl border-[var(--creed-border)] px-4 py-4 text-[15px] leading-7"
+                          className="min-h-[200px] rounded-xl border-[var(--creed-border)] px-4 py-4 text-[15px] leading-7"
                           placeholder="e.g. Ship the Creed v2 onboarding this quarter. Hit $20k MRR before summer. Long term, make Creed the file every AI reads first."
                         />
                       </AnimatedBlock>
@@ -381,7 +381,7 @@ export function OnboardingScreen({
                           onChange={(event) =>
                             updateOnboarding({ preferences: event.target.value })
                           }
-                          className="min-h-[200px] rounded-2xl border-[var(--creed-border)] px-4 py-4 text-[15px] leading-7"
+                          className="min-h-[200px] rounded-xl border-[var(--creed-border)] px-4 py-4 text-[15px] leading-7"
                           placeholder="e.g. Be direct, lead with the answer. No preambles, no over-praise. Never make assumptions about my work without checking first."
                         />
                       </AnimatedBlock>
@@ -445,7 +445,7 @@ export function OnboardingScreen({
                             if (pasteError) setPasteError(null);
                           }}
                           className={cn(
-                            "min-h-[220px] max-h-[44vh] resize-none overflow-y-auto rounded-2xl px-4 py-4 font-mono text-[14px] leading-7",
+                            "min-h-[220px] max-h-[44vh] resize-none overflow-y-auto rounded-xl px-4 py-4 font-mono text-[14px] leading-7",
                             pasteError
                               ? "border-[#DC2626] focus-visible:border-[#DC2626] focus-visible:ring-[#DC2626]/15"
                               : "border-[var(--creed-border)]"
@@ -745,7 +745,7 @@ const STRIP_ROWS: { name: string; accent: keyof typeof accentColorMap }[] = [
 
 function SectionStripsCard() {
   return (
-    <div className="mx-auto mt-10 max-w-[360px] rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5 text-left">
+    <div className="mx-auto mt-10 max-w-[360px] rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5 text-left">
       {STRIP_ROWS.map((row, index) => (
         <motion.div
           key={row.name}
@@ -787,7 +787,7 @@ function ProposalCard() {
 
   return (
     <motion.div
-      className="mx-auto mt-10 max-w-[520px] rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
+      className="mx-auto mt-10 max-w-[520px] rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
@@ -871,7 +871,7 @@ const OWNERSHIP_LINES: { heading: string; accent: keyof typeof accentColorMap; b
 function OwnershipCard() {
   return (
     <motion.div
-      className="mx-auto mt-10 max-w-[440px] overflow-hidden rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
+      className="mx-auto mt-10 max-w-[440px] overflow-hidden rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left shadow-[0_8px_24px_rgba(28,28,26,0.04)]"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
@@ -994,7 +994,7 @@ function AnimatedBlock({
 
 function CreedPreview({ sections }: { sections: CreedSection[] }) {
   return (
-    <div className="overflow-hidden rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left">
+    <div className="overflow-hidden rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] text-left">
       <div className="md:h-[520px] md:overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="mx-auto max-w-[920px] px-6 py-8 md:px-10">
           <div className="space-y-10">

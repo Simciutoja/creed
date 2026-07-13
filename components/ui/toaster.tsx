@@ -35,7 +35,7 @@ export function Toaster() {
           // padding to leave room for the absolutely-positioned close
           // button which now lives on the right edge of the toast.
           toast:
-            "group !rounded-[14px] !border !text-[13px] !leading-5 !shadow-[0_10px_30px_rgba(28,28,26,0.10)] !p-3.5 !pr-10",
+            "group !rounded-lg !border !text-[13px] !leading-5 !shadow-[0_10px_30px_rgba(28,28,26,0.10)] !p-3.5 !pr-10",
           title: "!font-medium",
           // Close button: anchored on the right (sonner defaults to left)
           // and inherits the toast's text colour via `text-current` so a

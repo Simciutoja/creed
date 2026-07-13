@@ -69,7 +69,7 @@ function RoadmapColumnView({ column }: { column: RoadmapColumn }) {
       </div>
 
       {column.tasks.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[var(--creed-border)] px-5 py-10 text-center text-[13px] text-[var(--creed-text-tertiary)]">
+        <div className="rounded-xl border border-dashed border-[var(--creed-border)] px-5 py-10 text-center text-[13px] text-[var(--creed-text-tertiary)]">
           Nothing here yet
         </div>
       ) : (
@@ -85,7 +85,7 @@ function RoadmapColumnView({ column }: { column: RoadmapColumn }) {
 
 function RoadmapCard({ task }: { task: RoadmapTask }) {
   return (
-    <article className="rounded-2xl bg-[var(--creed-surface)] p-5">
+    <article className="rounded-xl bg-[var(--creed-surface)] p-5">
       {task.code ? (
         <div className="font-mono text-[11px] tracking-tight text-[var(--creed-text-tertiary)]">
           {task.code}

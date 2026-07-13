@@ -610,7 +610,7 @@ export function McpHealthDashboard() {
       </div>
 
       {isEmpty ? (
-        <div className="mt-5 rounded-[16px] border border-dashed border-[var(--creed-border)] bg-[var(--creed-surface)] px-6 py-12 text-center">
+        <div className="mt-5 rounded-xl border border-dashed border-[var(--creed-border)] bg-[var(--creed-surface)] px-6 py-12 text-center">
           <IntegrationGlyph
             kind="mcp"
             framed={false}
@@ -663,7 +663,7 @@ export function McpHealthDashboard() {
             />
           </div>
 
-          <div className="mt-4 rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5">
+          <div className="mt-4 rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5">
             <div className="flex items-center justify-between gap-4">
               <div className="text-[13px] font-medium text-[var(--creed-text-secondary)]">
                 Activity over time
@@ -722,7 +722,7 @@ export function McpHealthDashboard() {
           </div>
 
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            <div className="flex min-w-0 flex-col rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5">
+            <div className="flex min-w-0 flex-col rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5">
               <div className="text-[13px] font-medium text-[var(--creed-text-secondary)]">
                 Proposal outcomes
               </div>
@@ -786,7 +786,7 @@ export function McpHealthDashboard() {
               )}
             </div>
 
-            <div className="min-w-0 rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5">
+            <div className="min-w-0 rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] p-5">
               <div className="text-[13px] font-medium text-[var(--creed-text-secondary)]">
                 Section coverage
               </div>
@@ -997,7 +997,7 @@ function StatTile({
   sub?: string;
 }) {
   return (
-    <div className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4">
+    <div className="rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4">
       <div className="text-[12px] font-medium text-[var(--creed-text-secondary)]">
         {label}
       </div>

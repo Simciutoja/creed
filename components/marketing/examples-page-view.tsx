@@ -764,7 +764,7 @@ export function ExamplesPageView() {
                     <div
                       key={example.id}
                       id={example.id}
-                      className="scroll-mt-28 rounded-[20px] bg-[var(--creed-surface)] p-5 md:p-6"
+                      className="scroll-mt-28 rounded-xl bg-[var(--creed-surface)] p-5 md:p-6"
                     >
                       <h3 className="text-[17px] font-medium leading-7 text-[var(--creed-text-primary)] md:text-[18px]">
                         {example.title}

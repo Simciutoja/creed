@@ -152,7 +152,7 @@ export function BillingDialog({ open, onOpenChange }: BillingDialogProps) {
                 <div
                   key={key}
                   className={cn(
-                    "rounded-[12px] border p-4",
+                    "rounded-md border p-4",
                     isCompany
                       ? "border-[#FDE68A] bg-[#FFFBEB] dark:border-[#78350F]/50 dark:bg-[#422006]/30"
                       : "border-[#BFDBFE] bg-[#EFF6FF] dark:border-[#1E3A8A]/50 dark:bg-[#172554]/30",

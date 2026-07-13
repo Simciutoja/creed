@@ -62,7 +62,7 @@ export default function LearnIndexPage() {
                     <li key={article.slug}>
                       <Link
                         href={`/learn/${article.slug}`}
-                        className="flex h-full flex-col rounded-[16px] bg-[var(--creed-surface)] p-5 transition-colors hover:bg-[var(--creed-surface-raised)]"
+                        className="flex h-full flex-col rounded-xl bg-[var(--creed-surface)] p-5 transition-colors hover:bg-[var(--creed-surface-raised)]"
                       >
                         <span className="line-clamp-2 text-[16px] font-medium leading-6 text-[var(--creed-text-primary)]">
                           {article.title}

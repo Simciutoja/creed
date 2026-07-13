@@ -142,7 +142,7 @@ export function SystemStatusPill({
     <Tag
       {...(href ? { href, target: "_blank", rel: "noreferrer" } : {})}
       className={cn(
-        "t-meta inline-flex items-center gap-2 rounded-[10px] bg-[var(--creed-surface-raised)] px-3 py-2 font-medium leading-none transition-colors hover:bg-[var(--creed-border)] hover:text-[var(--creed-text-primary)]",
+        "t-meta inline-flex items-center gap-2 rounded-sm bg-[var(--creed-surface-raised)] px-3 py-2 font-medium leading-none transition-colors hover:bg-[var(--creed-border)] hover:text-[var(--creed-text-primary)]",
         variant.text,
         className
       )}

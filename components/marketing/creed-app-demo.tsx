@@ -381,7 +381,7 @@ function NavRail({
           <div
             key={label}
             className={cn(
-              "mx-auto flex h-8 w-8 items-center justify-center rounded-[10px] text-[14px] font-medium text-[var(--creed-text-secondary)] lg:mx-0 lg:h-auto lg:w-auto lg:justify-start lg:gap-3 lg:px-2 lg:py-2",
+              "mx-auto flex h-8 w-8 items-center justify-center rounded-sm text-[14px] font-medium text-[var(--creed-text-secondary)] lg:mx-0 lg:h-auto lg:w-auto lg:justify-start lg:gap-3 lg:px-2 lg:py-2",
               active && "bg-[var(--creed-surface-raised)] text-[var(--creed-text-primary)]"
             )}
           >
@@ -405,7 +405,7 @@ function NavRail({
               onClick={() => onSelect(s.id)}
               aria-label={s.name}
               className={cn(
-                "mx-auto flex h-8 w-8 items-center justify-center rounded-[10px] text-left text-[14px] font-medium text-[var(--creed-text-secondary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)] lg:mx-0 lg:h-auto lg:w-full lg:justify-start lg:gap-3 lg:px-2 lg:py-2",
+                "mx-auto flex h-8 w-8 items-center justify-center rounded-sm text-left text-[14px] font-medium text-[var(--creed-text-secondary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)] lg:mx-0 lg:h-auto lg:w-full lg:justify-start lg:gap-3 lg:px-2 lg:py-2",
                 isActive && "bg-[var(--creed-surface-raised)] text-[var(--creed-text-primary)] hover:bg-[var(--creed-surface-raised)]"
               )}
             >
@@ -424,7 +424,7 @@ function NavRail({
         })}
         <button
           type="button"
-          className="mx-auto flex h-8 w-8 items-center justify-center rounded-[10px] text-left text-[14px] text-[var(--creed-text-tertiary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)] lg:mx-0 lg:h-auto lg:w-full lg:justify-start lg:gap-2 lg:px-2 lg:py-2"
+          className="mx-auto flex h-8 w-8 items-center justify-center rounded-sm text-left text-[14px] text-[var(--creed-text-tertiary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)] lg:mx-0 lg:h-auto lg:w-full lg:justify-start lg:gap-2 lg:px-2 lg:py-2"
         >
           <Plus className="h-3.5 w-3.5" strokeWidth={1.8} />
           <span className="hidden lg:inline">Add section</span>
@@ -433,7 +433,7 @@ function NavRail({
 
       <div className="mt-auto">
         <div className="my-4 h-px bg-[var(--creed-border)] lg:my-6" />
-        <div className="flex items-center justify-center gap-2.5 rounded-[10px] px-1 py-1 lg:justify-start lg:px-[7px]">
+        <div className="flex items-center justify-center gap-2.5 rounded-sm px-1 py-1 lg:justify-start lg:px-[7px]">
           <Avatar className="h-6 w-6 overflow-hidden rounded-[8px] bg-[var(--creed-accent)]">
             <AvatarFallback className="bg-[var(--creed-accent)] text-xs font-medium text-white">S</AvatarFallback>
           </Avatar>
@@ -605,7 +605,7 @@ function ActivityDrawer({ activity, onClose }: { activity: DemoActivity[]; onClo
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className="rounded-[14px] border border-[var(--creed-border)] bg-[var(--creed-surface)] p-3"
+                className="rounded-lg border border-[var(--creed-border)] bg-[var(--creed-surface)] p-3"
               >
                 <div className="flex items-center gap-2.5">
                   {entry.actorType === "agent" ? (
@@ -738,7 +738,7 @@ export function CreedAppDemo() {
   return (
     <div className="relative w-full">
       <div className="relative">
-        <div className="mx-auto overflow-hidden rounded-[14px] border border-black/5 bg-[var(--creed-surface)] shadow-[0_18px_50px_-30px_rgba(0,0,0,0.32)] dark:border-white/10">
+        <div className="mx-auto overflow-hidden rounded-lg border border-black/5 bg-[var(--creed-surface)] shadow-[0_18px_50px_-30px_rgba(0,0,0,0.32)] dark:border-white/10">
           <BrowserChrome />
 
           <div className="relative flex h-[540px] sm:h-[580px] lg:h-[620px]">

@@ -74,7 +74,7 @@ function Block({ block }: { block: ArticleBlock }) {
               {block.caption}
             </p>
           ) : null}
-          <div className="overflow-x-auto rounded-[14px] border border-[var(--creed-border)]">
+          <div className="overflow-x-auto rounded-lg border border-[var(--creed-border)]">
             <table className="w-full border-collapse text-left text-[14px]">
               <thead>
                 <tr className="border-b border-[var(--creed-border)] bg-[var(--creed-surface)]">
@@ -115,7 +115,7 @@ function Block({ block }: { block: ArticleBlock }) {
       );
     case "code":
       return (
-        <pre className="mt-6 overflow-x-auto rounded-[16px] bg-[var(--creed-surface)] p-5 font-mono text-[13px] leading-6 text-[var(--creed-text-primary)]">
+        <pre className="mt-6 overflow-x-auto rounded-xl bg-[var(--creed-surface)] p-5 font-mono text-[13px] leading-6 text-[var(--creed-text-primary)]">
           <code>{block.code}</code>
         </pre>
       );

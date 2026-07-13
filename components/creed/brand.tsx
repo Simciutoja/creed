@@ -171,7 +171,7 @@ export function IntegrationGlyph({
     <div
       className={cn(
         framed
-          ? "flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--creed-border)] bg-[var(--creed-surface)] text-[var(--creed-text-primary)]"
+          ? "flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] text-[var(--creed-text-primary)]"
           : "flex items-center justify-center text-[var(--creed-text-primary)]",
         className
       )}

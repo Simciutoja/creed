@@ -38,7 +38,7 @@ export function BackendSetupScreen({
                 to your Supabase project, then reload.
               </p>
 
-              <div className="mt-5 rounded-[16px] border border-[var(--creed-border)] bg-[var(--creed-background)] px-4 py-4">
+              <div className="mt-5 rounded-xl border border-[var(--creed-border)] bg-[var(--creed-background)] px-4 py-4">
                 <div className="text-[12px] font-medium text-[var(--creed-text-tertiary)]">
                   Missing right now
                 </div>
@@ -52,7 +52,7 @@ export function BackendSetupScreen({
               </div>
 
               {errorMessage ? (
-                <div className="mt-4 rounded-[16px] border border-[#F5C77A] bg-[#FFF6E8] px-4 py-4 text-[12px] leading-6 text-[#9A6700]">
+                <div className="mt-4 rounded-xl border border-[#F5C77A] bg-[#FFF6E8] px-4 py-4 text-[12px] leading-6 text-[#9A6700]">
                   {errorMessage}
                 </div>
               ) : null}

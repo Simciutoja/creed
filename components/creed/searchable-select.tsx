@@ -74,7 +74,7 @@ export function SearchableSelect({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-[var(--radix-popover-trigger-width)] rounded-2xl border border-[var(--creed-border)] bg-[var(--creed-surface)] p-2 shadow-[0_18px_50px_rgba(28,28,26,0.10)]"
+        className="w-[var(--radix-popover-trigger-width)] rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] p-2 shadow-[0_18px_50px_rgba(28,28,26,0.10)]"
       >
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--creed-text-tertiary)]" />

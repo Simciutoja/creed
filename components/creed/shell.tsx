@@ -109,7 +109,7 @@ function ShellNavLink({
         // a square, not a slight rectangle; lg restores the full-width row.
         // When the sidebar is collapsed (S key) the lg styles are dropped so
         // desktop renders the same icon rail as mobile.
-        "flex h-8 w-8 mx-auto items-center justify-center rounded-[10px] text-[14px] font-medium text-[var(--creed-text-secondary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]",
+        "flex h-8 w-8 mx-auto items-center justify-center rounded-sm text-[14px] font-medium text-[var(--creed-text-secondary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]",
         !collapsed &&
           "lg:h-auto lg:w-auto lg:mx-0 lg:min-h-0 lg:justify-start lg:gap-3 lg:px-2 lg:py-2",
         active &&
@@ -369,7 +369,7 @@ export function CreedShell({
               href="/home"
               aria-label="Creed home"
               className={cn(
-                "mx-auto flex h-8 w-8 items-center justify-center rounded-[10px] transition-opacity duration-200 hover:opacity-60",
+                "mx-auto flex h-8 w-8 items-center justify-center rounded-sm transition-opacity duration-200 hover:opacity-60",
                 !collapsed && "lg:hidden"
               )}
             >
@@ -380,7 +380,7 @@ export function CreedShell({
               <Link
                 href="/home"
                 aria-label="Creed home"
-                className="flex min-w-0 items-center rounded-[10px] px-2 py-1.5 transition-opacity duration-200 hover:opacity-60"
+                className="flex min-w-0 items-center rounded-sm px-2 py-1.5 transition-opacity duration-200 hover:opacity-60"
               >
                 <CreedWordmark className="ml-0" />
               </Link>
@@ -398,7 +398,7 @@ export function CreedShell({
                 onMouseEnter={() => searchIconRef.current?.startAnimation()}
                 onMouseLeave={() => searchIconRef.current?.stopAnimation()}
                 className={cn(
-                  "flex h-8 w-8 mx-auto items-center justify-center rounded-[10px] text-[14px] font-medium text-[var(--creed-text-secondary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]",
+                  "flex h-8 w-8 mx-auto items-center justify-center rounded-sm text-[14px] font-medium text-[var(--creed-text-secondary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]",
                   !collapsed && "lg:h-auto lg:w-full lg:mx-0 lg:min-h-0 lg:justify-start lg:gap-3 lg:px-2 lg:py-2"
                 )}
                 aria-label="Search"
@@ -524,7 +524,7 @@ export function CreedShell({
                     type="button"
                     onClick={() => handleSectionClick(section.id)}
                     className={cn(
-                      "flex h-8 w-8 mx-auto items-center justify-center rounded-[10px] text-left text-[14px] font-medium text-[var(--creed-text-secondary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]",
+                      "flex h-8 w-8 mx-auto items-center justify-center rounded-sm text-left text-[14px] font-medium text-[var(--creed-text-secondary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]",
                       !collapsed &&
                         "lg:h-auto lg:w-full lg:mx-0 lg:min-h-0 lg:justify-start lg:gap-3 lg:px-2 lg:py-2",
                       isActive &&
@@ -560,7 +560,7 @@ export function CreedShell({
                   type="button"
                   onClick={() => handleProposalClick(row.id)}
                   className={cn(
-                    "flex h-8 w-8 mx-auto items-center justify-center rounded-[10px] bg-[#ECFDF5] text-left text-[14px] font-medium text-[#047857] transition-colors duration-150 hover:bg-[#D1FAE5] hover:text-[#065F46] dark:bg-[#052e1a]/40 dark:text-[#4ade80] dark:hover:bg-[#052e1a]/60 dark:hover:text-[#4ade80]",
+                    "flex h-8 w-8 mx-auto items-center justify-center rounded-sm bg-[#ECFDF5] text-left text-[14px] font-medium text-[#047857] transition-colors duration-150 hover:bg-[#D1FAE5] hover:text-[#065F46] dark:bg-[#052e1a]/40 dark:text-[#4ade80] dark:hover:bg-[#052e1a]/60 dark:hover:text-[#4ade80]",
                     !collapsed &&
                       "lg:h-auto lg:w-full lg:mx-0 lg:min-h-0 lg:justify-start lg:gap-3 lg:px-2 lg:py-2",
                     // Same active-equals-hover rule as the pending-delete
@@ -586,7 +586,7 @@ export function CreedShell({
                 type="button"
                 onClick={handleAddSectionClick}
                 className={cn(
-                  "flex h-8 w-8 mx-auto items-center justify-center rounded-[10px] text-left text-[14px] text-[var(--creed-text-tertiary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]",
+                  "flex h-8 w-8 mx-auto items-center justify-center rounded-sm text-left text-[14px] text-[var(--creed-text-tertiary)] transition-colors duration-150 hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]",
                   !collapsed && "lg:h-auto lg:w-full lg:mx-0 lg:min-h-0 lg:justify-start lg:gap-2 lg:px-2 lg:py-2"
                 )}
                 aria-label="Add section"
@@ -603,7 +603,7 @@ export function CreedShell({
                   <Button
                     variant="ghost"
                     className={cn(
-                      "h-auto w-full min-w-0 justify-center rounded-[10px] border-0 bg-transparent px-1 py-1 transition-colors hover:bg-[var(--creed-surface-raised)] aria-expanded:bg-[var(--creed-surface-raised)] dark:hover:bg-[var(--creed-surface-raised)]",
+                      "h-auto w-full min-w-0 justify-center rounded-sm border-0 bg-transparent px-1 py-1 transition-colors hover:bg-[var(--creed-surface-raised)] aria-expanded:bg-[var(--creed-surface-raised)] dark:hover:bg-[var(--creed-surface-raised)]",
                       !collapsed && "lg:justify-between lg:bg-transparent lg:pl-[7px] lg:pr-2.5 lg:py-1.5"
                     )}
                   >

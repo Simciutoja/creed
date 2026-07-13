@@ -1164,7 +1164,7 @@ export function CompanySettings() {
               className="flex items-center justify-between gap-4 py-5 first:pt-0 last:pb-0"
             >
               <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-dashed border-[var(--creed-border-strong)] text-[var(--creed-text-tertiary)]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-dashed border-[var(--creed-border-strong)] text-[var(--creed-text-tertiary)]">
                   <Mail className="h-4 w-4" />
                 </span>
                 <div className="min-w-0">
@@ -1271,7 +1271,7 @@ export function CompanySettings() {
                 {state.sections.map((section) => (
                   <div
                     key={section.id}
-                    className="flex items-center justify-between gap-3 rounded-[10px] py-1.5"
+                    className="flex items-center justify-between gap-3 rounded-sm py-1.5"
                   >
                     <div className="flex min-w-0 items-center gap-2.5">
                       <span
@@ -1385,7 +1385,7 @@ export function CompanySettings() {
                     return (
                       <div
                         key={section.id}
-                        className="flex items-center justify-between gap-3 rounded-[10px] py-1.5"
+                        className="flex items-center justify-between gap-3 rounded-sm py-1.5"
                       >
                         <div className="flex min-w-0 items-center gap-2.5">
                           <span

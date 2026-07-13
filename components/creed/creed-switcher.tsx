@@ -184,7 +184,7 @@ export function CreedSwitcher() {
               onSelect={() => {
                 void switchTo(creed);
               }}
-              className="flex items-center justify-between gap-3 rounded-[10px] px-3 py-2.5 text-[14px]"
+              className="flex items-center justify-between gap-3 rounded-sm px-3 py-2.5 text-[14px]"
             >
               <span className="flex min-w-0 items-center gap-2.5 text-[var(--creed-text-primary)]">
                 <ProfileAvatar
