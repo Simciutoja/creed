@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import type { User } from "@supabase/supabase-js";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -37,7 +38,11 @@ export type ActiveCreed = {
  * with no Creed row yet, which the gate routes to onboarding). `client` is the
  * caller's session client (used to read membership under RLS).
  */
-export async function resolveActiveCreed(
+// cache()-wrapped: the app layout and AuthedProviders both resolve the active
+// Creed in the same render. With a shared client+user (see getRequestAuth)
+// the args match, so the membership read runs once per request. A no-op in
+// route handlers.
+export const resolveActiveCreed = cache(async function resolveActiveCreed(
   client: unknown,
   user: User
 ): Promise<ActiveCreed | null> {
@@ -53,7 +58,7 @@ export async function resolveActiveCreed(
     creeds[0];
 
   return { creedId: chosen.id, role: chosen.role, creeds };
-}
+});
 
 /**
  * The active Creed's id if it is a company Creed the caller OWNS, else null.

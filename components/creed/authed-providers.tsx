@@ -6,7 +6,7 @@ import { loadActiveCreedState } from "@/lib/creed-backend";
 import { resolveActiveCreed } from "@/lib/creed-context";
 import { isSupabaseTableMissingError } from "@/lib/creed-backend-errors";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getRequestAuth } from "@/lib/request-auth";
 
 // Loads the signed-in user's Creed and wraps its subtree in <CreedProvider>.
 // This is the dynamic, user-specific boundary that used to live in the root
@@ -20,10 +20,8 @@ export async function AuthedProviders({ children }: { children: ReactNode }) {
   let missingSchemaMessage: string | null = null;
 
   if (isSupabaseConfigured()) {
-    const supabase = await createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Shares the layout's cached client + getUser within this render.
+    const { supabase, user } = await getRequestAuth();
 
     if (user) {
       try {

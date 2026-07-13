@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import Stripe from "stripe";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { SupabaseLikeClient } from "@/lib/supabase/types";
@@ -309,7 +310,9 @@ export function entitlementGrantsAccess(row: {
  * clients (the generated row types don't yet know about
  * `creed_entitlements`).
  */
-export async function hasActiveEntitlement(
+// cache()-wrapped so the layout gate and the state load don't each re-read the
+// entitlement row within one render (a no-op in route handlers).
+export const hasActiveEntitlement = cache(async function hasActiveEntitlement(
   client: unknown,
   userId: string
 ): Promise<boolean> {
@@ -329,7 +332,7 @@ export async function hasActiveEntitlement(
     return false;
   }
   return entitlementGrantsAccess(data);
-}
+});
 
 /**
  * Read the entitlement row for a user via the admin client. Returns

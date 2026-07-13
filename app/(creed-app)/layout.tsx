@@ -13,7 +13,7 @@ import {
 } from "@/lib/stripe";
 import { hasCompanyAccess } from "@/lib/creed-membership";
 import { resolveActiveCreed } from "@/lib/creed-context";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getRequestAuth } from "@/lib/request-auth";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -55,10 +55,7 @@ export default async function CreedAppLayout({ children }: { children: ReactNode
     );
   }
 
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getRequestAuth();
 
   if (!user) {
     redirect("/pricing");
