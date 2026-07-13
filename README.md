@@ -5,12 +5,6 @@
   <img alt="Creed" src="public/assets/brand/brandmark-email.png" width="208">
 </picture>
 
-</div>
-
----
-
-<div align="center">
-
 **One file across every agent.**
 
 Write yourself down once. Every AI you use reads it before answering,
@@ -23,8 +17,6 @@ and proposes updates as it learns you. You approve the good ones.
 [![MCP](https://img.shields.io/badge/protocol-MCP%20%2B%20OAuth%202.1-8A2BE2)](https://creed.md/docs)
 
 </div>
-
----
 
 ## What is Creed?
 
@@ -51,8 +43,6 @@ It is not a notes app, a journal, or a memory dump. If you already maintain a ha
 Ten sections, five always-on (Identity, Goals, Work, Preferences, Routines) and five optional (Beliefs, Constraints, People, Health, Context). Every section is agent-writable, per-section permissions decide whether edits apply directly or wait for review.
 
 **Personal** is the core one-user product. **Company** extends the same file model into a shared workspace: roles, per-section permissions, attribution, invites, pooled AI credits, seat billing.
-
----
 
 ## Quickstart
 
@@ -101,8 +91,6 @@ and copy the printed `whsec_…` into `STRIPE_WEBHOOK_SECRET`. Test payments the
 
 </details>
 
----
-
 ## Connect an agent
 
 Open `/connections` and add the Creed MCP URL to your agent as a custom connector. The client opens a browser, you click **Allow**, done. No tokens to copy.
@@ -110,8 +98,6 @@ Open `/connections` and add the Creed MCP URL to your agent as a custom connecto
 Creed is its own OAuth 2.1 authorization server (`/authorize`, `/token`, `/register`, `/.well-known/*`), so any spec-compliant MCP client connects from the server URL alone. First-class connect flows exist for Claude Code (one-line `claude mcp add`), Codex, Cursor (one-click), ChatGPT, Devin, OpenClaw, Hermes, OpenCode, Factory, Manus, and custom agents. Clients that do not speak MCP can use the documented `/api/creed` HTTP API.
 
 Agents get three verbs: read the file, propose an update, or direct-edit where you have granted it. A health dashboard tracks per-agent reads, writes, and errors.
-
----
 
 ## Stack
 
@@ -125,8 +111,6 @@ Agents get three verbs: read the file, propose an update, or direct-edit where y
 | Sync | GitHub push/pull of `creed.md`, lossless Markdown round-trip |
 
 Full tour at [creed.md/stack](https://creed.md/stack).
-
----
 
 ## Repository map
 
@@ -157,8 +141,6 @@ npx tsc --noEmit     # typecheck
 npm run lint         # ESLint
 npm run build        # production build
 ```
-
----
 
 ## Contributing
 
