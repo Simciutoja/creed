@@ -1,13 +1,18 @@
 <div align="center">
 
-# Creed
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="public/assets/brand/brandmark-email-dark.png">
+  <img alt="Creed" src="public/assets/brand/brandmark-email.png" width="208">
+</picture>
+
+<br><br>
 
 **One file across every agent.**
 
 Write yourself down once. Every AI you use reads it before answering,
 and proposes updates as it learns you. You approve the good ones.
 
-[creed.md](https://creed.md) · [Docs](https://creed.md/docs) · [Pricing](https://creed.md/pricing) · [Stack](https://creed.md/stack) · [Privacy](https://creed.md/privacy)
+[Home](https://creed.md) · [Docs](https://creed.md/docs) · [Pricing](https://creed.md/pricing) · [Stack](https://creed.md/stack) · [Privacy](https://creed.md/privacy)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
