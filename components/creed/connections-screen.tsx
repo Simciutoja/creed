@@ -143,10 +143,10 @@ export function ConnectionsScreen() {
         <div className="mt-5 grid items-start gap-4 lg:grid-cols-2">
           <div
             className={cn(
-              "relative flex h-auto flex-col self-start rounded-xl border bg-[var(--creed-surface)] p-4 transition-colors duration-160 md:p-5",
+              "relative flex h-auto flex-col self-start rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 transition-opacity duration-160 md:p-5",
               connectionMode === "mcp"
-                ? "border-[var(--creed-border-strong)] bg-[var(--creed-surface-raised)]/35"
-                : "border-[var(--creed-border)] hover:border-[var(--creed-border-strong)]",
+                ? "opacity-100"
+                : "opacity-50 hover:opacity-70",
             )}
           >
             <button
@@ -273,10 +273,10 @@ export function ConnectionsScreen() {
 
           <div
             className={cn(
-              "relative flex h-auto flex-col self-start rounded-xl border bg-[var(--creed-surface)] p-4 transition-colors duration-160 md:p-5",
+              "relative flex h-auto flex-col self-start rounded-xl border border-[var(--creed-border)] bg-[var(--creed-surface)] p-4 transition-opacity duration-160 md:p-5",
               connectionMode === "cli"
-                ? "border-[var(--creed-border-strong)] bg-[var(--creed-surface-raised)]/35"
-                : "border-[var(--creed-border)] hover:border-[var(--creed-border-strong)]",
+                ? "opacity-100"
+                : "opacity-50 hover:opacity-70",
             )}
           >
             <button
