@@ -21,6 +21,7 @@ import { useAnimatedIconControls } from "@/components/creed/animated-icon-contro
 import { ArrowRightIcon } from "@/components/ui/arrow-right";
 import { useLandingAuthState } from "@/components/marketing/use-landing-auth-state";
 import { useGitHubStars } from "@/components/marketing/use-github-stars";
+import { CREED_TAGLINE } from "@/lib/marketing/brand";
 import { cn } from "@/lib/utils";
 
 import {
@@ -253,7 +254,7 @@ export function MarketingHeader({
       <div
         ref={chromeRef}
         className={cn(
-          "pointer-events-auto relative mx-auto w-full transition-[max-width] duration-300 ease-out",
+          "pointer-events-auto relative mx-auto w-full transition-[max-width] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
           stickyChromeActive ? "max-w-[720px]" : "max-w-[880px]",
         )}
       >
@@ -323,7 +324,7 @@ export function MarketingHeader({
         <header
           ref={headerRef}
           className={cn(
-            "relative z-10 flex w-full items-center justify-between transition-[padding] duration-300 ease-out",
+            "relative z-10 flex w-full items-center justify-between transition-[padding] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
             stickyChromeActive ? "py-1.5 pl-4 pr-1.5" : "px-1 py-1",
           )}
         >
@@ -998,7 +999,7 @@ export function MarketingFooter() {
               <CreedWordmark />
             </Link>
             <p className="t-body-lg mt-4 max-w-sm text-[var(--creed-text-secondary)]">
-              Personal context for your agents.
+              {CREED_TAGLINE}
             </p>
           </div>
           <div>

@@ -1,4 +1,5 @@
 import { getSiteUrl } from "@/lib/supabase/env";
+import { CREED_DESCRIPTION, CREED_TAGLINE } from "@/lib/marketing/brand";
 import { PRICING_ONE_LINER } from "@/lib/marketing/pricing";
 import { learnArticles } from "@/lib/marketing/learn";
 
@@ -18,7 +19,7 @@ export function GET() {
 
   const body = `# Creed
 
-> Creed is one personal context file that every AI reads before it answers. Written once, kept current by your agents, and portable across every tool you use.
+> ${CREED_TAGLINE} ${CREED_DESCRIPTION.slice(CREED_TAGLINE.length).trim()}
 
 Full plain-text content: ${base}/llms-full.txt
 

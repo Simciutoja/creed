@@ -10,12 +10,10 @@
 
 import { GITHUB_URL, INSTAGRAM_URL, TWITTER_URL } from "@/lib/branding";
 import type { FaqItem } from "@/lib/marketing/faq";
+import { CREED_DESCRIPTION, CREED_TAGLINE } from "@/lib/marketing/brand";
 import { getSiteUrl } from "@/lib/supabase/env";
 
 const SITE_NAME = "Creed";
-const SITE_TAGLINE = "The personal context file every AI reads.";
-const SITE_DESCRIPTION =
-  "Creed is one personal context file that every AI reads before it answers. Written once, kept current by your agents, and portable across every tool you use.";
 
 function base() {
   return getSiteUrl().replace(/\/$/, "");
@@ -42,7 +40,7 @@ export function organizationSchema() {
     name: SITE_NAME,
     url,
     logo: `${url}/opengraph-image.jpg`,
-    description: SITE_DESCRIPTION,
+    description: CREED_DESCRIPTION,
     ...(sameAs.length > 0 ? { sameAs } : {}),
   };
 }
@@ -55,7 +53,7 @@ export function websiteSchema() {
     "@id": websiteId(),
     name: SITE_NAME,
     url,
-    description: SITE_TAGLINE,
+    description: CREED_TAGLINE,
     publisher: { "@id": organizationId() },
   };
 }
@@ -77,7 +75,7 @@ export function softwareApplicationSchema() {
     "@type": "SoftwareApplication",
     name: SITE_NAME,
     url,
-    description: SITE_DESCRIPTION,
+    description: CREED_DESCRIPTION,
     applicationCategory: "ProductivityApplication",
     operatingSystem: "Web",
     image: `${url}/opengraph-image.jpg`,

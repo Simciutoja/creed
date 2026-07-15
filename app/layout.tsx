@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { ThemeProvider } from "@/components/creed/theme-provider";
 import { WelcomeDevPreview } from "@/components/creed/welcome-dev-preview";
+import { CREED_DESCRIPTION, CREED_META_TITLE } from "@/lib/marketing/brand";
 import { getSiteUrl } from "@/lib/supabase/env";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
@@ -23,9 +24,6 @@ const geistMono = Geist_Mono({
 // - `app/favicon.ico` stays the browser-tab favicon. We pin it explicitly
 //   under `icons.icon` so a future `app/icon.png` doesn't silently take over
 //   and the search-result favicon Google reads stays the one users see in tabs.
-const SITE_DESCRIPTION =
-  "Creed is one personal context file that every AI reads before it answers. Written once, kept current by your agents, and portable across every tool you use.";
-
 // `title.default` is the brand title used by any page that doesn't set its
 // own (the root redirect and /home both fall back to it). `title.template`
 // suffixes per-page titles, so individual pages set a bare title ("Pricing")
@@ -34,23 +32,23 @@ const SITE_DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
-    default: "Creed - the personal context file every AI reads",
+    default: CREED_META_TITLE,
     template: "%s | Creed",
   },
-  description: SITE_DESCRIPTION,
+  description: CREED_DESCRIPTION,
   icons: {
     icon: "/favicon.ico",
   },
   openGraph: {
     type: "website",
     siteName: "Creed",
-    title: "Creed - the personal context file every AI reads",
-    description: SITE_DESCRIPTION,
+    title: CREED_META_TITLE,
+    description: CREED_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Creed - the personal context file every AI reads",
-    description: SITE_DESCRIPTION,
+    title: CREED_META_TITLE,
+    description: CREED_DESCRIPTION,
   },
 };
 
