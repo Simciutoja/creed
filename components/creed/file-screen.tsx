@@ -78,6 +78,13 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AgentIconStack } from "@/components/creed/agent-icon-stack";
 import {
+  ACTIVITY_FILTERS,
+  ACTIVITY_STATUS_LABELS,
+  ActivityFilterPill,
+  getActivityFilterTone,
+  getActivityStatusStyles,
+} from "@/components/creed/activity-ui";
+import {
   OverallQualityPopover,
   QualityRing,
   SectionQualityPopover,
@@ -137,24 +144,6 @@ import {
 } from "@/lib/creed-permissions";
 import { cn } from "@/lib/utils";
 
-const activityStatuses: Array<{
-  label: string;
-  value: "all" | ActivityStatus;
-}> = [
-  { label: "All", value: "all" },
-  { label: "Direct", value: "direct" },
-  { label: "Accepted", value: "accepted" },
-  { label: "Rejected", value: "rejected" },
-];
-
-const activityStatusLabelMap: Record<ActivityStatus, string> = {
-  pending: "Pending",
-  accepted: "Accepted",
-  direct: "Direct",
-  rejected: "Rejected",
-  stale: "Stale",
-};
-
 const FILE_NAV_INTENT_KEY = "creed:file-nav-intent";
 const QUALITY_FINGERPRINT_IGNORED_KEYS = new Set([
   "lastEditedAt",
@@ -202,26 +191,6 @@ function useJsonStable<T>(value: T): T {
 
 const EMPTY_PROPOSALS: Proposal[] = [];
 
-function getProposalStatusStyles(status: ActivityStatus) {
-  if (status === "pending") {
-    return "bg-[#EFF6FF] text-[var(--creed-accent-hover)] dark:bg-[#1e3a8a]/25 dark:text-[#93c5fd]";
-  }
-
-  if (status === "direct") {
-    return "bg-[#FFF6E8] text-[#C26A00] dark:bg-[#451a03]/40 dark:text-[#fbbf24]";
-  }
-
-  if (status === "accepted") {
-    return "bg-[#F0FDF4] text-[#15803D] dark:bg-[#052e1a]/50 dark:text-[#4ade80]";
-  }
-
-  if (status === "stale") {
-    return "bg-[#F5F3FF] text-[#7C3AED] dark:bg-[#2e1065]/40 dark:text-[#c4b5fd]";
-  }
-
-  return "bg-[#FEF2F2] text-[#B91C1C] dark:bg-[#3F1212]/40 dark:text-[#fca5a5]";
-}
-
 function formatRelativeTime(timestamp?: string, fallbackLabel?: string) {
   if (!timestamp) {
     return fallbackLabel === "just now" ? "now" : (fallbackLabel ?? "now");
@@ -258,45 +227,6 @@ function formatRelativeTime(timestamp?: string, fallbackLabel?: string) {
   }
 
   return `${weeks}w`;
-}
-
-function ActivityFilterPill({
-  active,
-  tone = "blue",
-  onClick,
-  children,
-}: {
-  active: boolean;
-  tone?: "blue" | "green" | "red" | "orange" | "purple";
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  const activeClass =
-    tone === "green"
-      ? "border-[#22C55E] bg-[#F0FDF4] text-[#15803D] shadow-[inset_0_0_0_1px_#22C55E] dark:border-[#4ade80] dark:bg-[#052e1a]/50 dark:text-[#4ade80] dark:shadow-[inset_0_0_0_1px_#4ade80]"
-      : tone === "red"
-        ? "border-[#EF4444] bg-[#FEF2F2] text-[#B91C1C] shadow-[inset_0_0_0_1px_#EF4444] dark:border-[#F87171] dark:bg-[#3F1212]/40 dark:text-[#fca5a5] dark:shadow-[inset_0_0_0_1px_#F87171]"
-        : tone === "orange"
-          ? "border-[#F59E0B] bg-[#FFF7ED] text-[#C26A00] shadow-[inset_0_0_0_1px_#F59E0B] dark:border-[#fbbf24] dark:bg-[#451a03]/40 dark:text-[#fbbf24] dark:shadow-[inset_0_0_0_1px_#fbbf24]"
-          : tone === "purple"
-            ? "border-[#8B5CF6] bg-[#F5F3FF] text-[#7C3AED] shadow-[inset_0_0_0_1px_#8B5CF6] dark:border-[#c4b5fd] dark:bg-[#2e1065]/40 dark:text-[#c4b5fd] dark:shadow-[inset_0_0_0_1px_#c4b5fd]"
-            : "border-[var(--creed-accent)] bg-[#EFF6FF] text-[#1447E6] shadow-[inset_0_0_0_1px_#2563EB] dark:border-[#93c5fd] dark:bg-[#1e3a8a]/30 dark:text-[#93c5fd] dark:shadow-[inset_0_0_0_1px_#93c5fd]";
-
-  return (
-    <motion.button
-      type="button"
-      whileTap={{ scale: 0.985 }}
-      onClick={onClick}
-      className={cn(
-        "rounded-md border px-3 py-1.5 text-[12px] font-medium outline-none transition-colors focus:outline-none focus-visible:outline-none",
-        active
-          ? activeClass
-          : "border-[var(--creed-border)] bg-[var(--creed-surface)] text-[var(--creed-text-secondary)] hover:border-[var(--creed-border-strong)] hover:bg-[var(--creed-surface-raised)] hover:text-[var(--creed-text-primary)]",
-      )}
-    >
-      {children}
-    </motion.button>
-  );
 }
 
 function formatDayLabel(timestamp?: string, fallbackLabel?: string) {
@@ -4373,22 +4303,12 @@ function ActivityRail({
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          {activityStatuses.map((item) => (
+          {ACTIVITY_FILTERS.map((item) => (
             <ActivityFilterPill
               key={item.value}
               onClick={() => setStatusFilter(item.value)}
               active={statusFilter === item.value}
-              tone={
-                item.value === "accepted"
-                  ? "green"
-                  : item.value === "rejected"
-                    ? "red"
-                    : item.value === "direct"
-                      ? "orange"
-                      : item.value === "stale"
-                        ? "purple"
-                        : "blue"
-              }
+              tone={getActivityFilterTone(item.value)}
             >
               {item.label}
             </ActivityFilterPill>
@@ -4542,10 +4462,10 @@ function ActivityRow({
               <span
                 className={cn(
                   "rounded-[6px] px-2 py-0.5 text-[10px] font-medium",
-                  getProposalStatusStyles(entry.status),
+                  getActivityStatusStyles(entry.status),
                 )}
               >
-                {activityStatusLabelMap[entry.status]}
+                {ACTIVITY_STATUS_LABELS[entry.status]}
               </span>
               <ChevronDown
                 className={cn(
